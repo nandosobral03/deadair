@@ -32,7 +32,7 @@
 				{#if browser}
 					<img
 						class="object-cover h-full w-full place-content-center absolute"
-						src={channel.thumbnail}
+						src={channel.thumbnail || '/placeholder.svg'}
 						alt={channel.name}
 						on:error={handleError}
 					/>
@@ -62,7 +62,7 @@
 	.channel-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-		grid-template-rows: repeat(auto-fill, minmax(16rem, 1fr));
+		grid-template-rows: repeat(auto-fill, 16rem);
 		grid-gap: 1rem;
 	}
 </style>

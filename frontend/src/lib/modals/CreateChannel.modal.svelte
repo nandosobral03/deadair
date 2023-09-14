@@ -1,32 +1,97 @@
 <script lang="ts">
-	import axios from 'axios';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { uploadImage } from '$lib/utils/image';
+	import { createChannelAPI, updateChannelAPI } from '$lib/utils/channel';
+	import { toastStore } from '$lib/stores/toast.store';
+	import TooltippedInput from '$lib/components/TooltippedInput.svelte';
+	import { modalStore } from '$lib/stores/modal.store';
 	let type = 'public';
-	let name = '';
-	let description = '';
-	let channelNumber = 0;
 	let thumbnail: File | null = null;
+	let form = {
+		name: {
+			value: '',
+			error: '',
+			validator: (value: any) => {
+				if (value.length < 3) {
+					return 'Name must be at least 3 characters long!';
+				}
+				return '';
+			}
+		},
+		description: {
+			value: '',
+			error: '',
+			validator: (value: any) => {
+				if (value.length < 3) {
+					return 'Description must be at least 3 characters long!';
+				}
+				return '';
+			}
+		},
+		channelNumber: {
+			value: 0,
+			error: '',
+			validator: (value: any) => {
+				if (value < 1 || value > 9999) {
+					return 'Channel number must be between 0 and 9999!';
+				}
+				return '';
+			}
+		}
+	};
 
-	const validateInput = () => {};
+	const getValues = () => {
+		const values: any = {};
+		const keys = Object.keys(form) as (keyof typeof form)[];
+		for (const key of keys) {
+			values[key] = form[key].value;
+		}
+		return values;
+	};
+
+	const validateForm = () => {
+		const keys = Object.keys(form) as (keyof typeof form)[];
+		let isValid = true;
+		for (const key of keys) {
+			const value = form[key].value;
+			const error = form[key].validator(value);
+			form[key].error = error;
+			if (error) {
+				isValid = false;
+			}
+		}
+		return isValid;
+	};
 
 	const createChannel = async () => {
-		validateInput();
-		if (type == 'public') {
-			const data = await axios.post(
-				`${PUBLIC_API_URL}admin/channel/`,
-				{
-					name,
-					description,
-					channelNumber,
-					thumbnail: ''
-				},
-				{
-					headers: {
-						'x-api-key': localStorage.getItem('x-api-key')
-					}
+		if (!validateForm()) return;
+		let { name, description, channelNumber } = getValues();
+		try {
+			const { id } = await createChannelAPI(name, description, channelNumber);
+			toastStore.addToast({
+				type: 'success',
+				title: 'Channel Created',
+				text: `Channel ${name} was created successfully!`
+			});
+			if (thumbnail) {
+				try {
+					const imageData = await uploadImage(thumbnail);
+					const imageURL = imageData.data.link;
+					await updateChannelAPI(id, name, description, channelNumber, imageURL);
+				} catch {
+					toastStore.addToast({
+						type: 'error',
+						title: 'Channel Creation Failed',
+						text: `Channel thumbnail could not be uploaded!`
+					});
 				}
-			);
-			console.log(data);
+			}
+			modalStore.clear();
+		} catch (error: any) {
+			toastStore.addToast({
+				type: 'error',
+				title: 'Channel Creation Failed',
+				text: `${error?.response?.data?.message || 'Something went wrong!'}`
+			});
 		}
 	};
 
@@ -42,30 +107,16 @@
 <div class="flex flex-col justify-between w-full h-full">
 	<div class="flex flex-col gap-4 w-full">
 		<div class="w-full flex gap-2">
-			<input
-				bind:value={name}
-				type="text"
-				placeholder="'Essays'"
-				class="border-2 flex-grow
-				 border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300"
-			/>
-
-			<input
-				type="number"
-				bind:value={channelNumber}
-				class="border-2 border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300"
-				min="0"
-				max="9999"
-				step="1"
-			/>
+			<TooltippedInput class="flex-grow" item={form.name} placeholder="'Essays'" type="text" />
+			<TooltippedInput class="w-16" item={form.channelNumber} placeholder="'50'" type="number" />
 		</div>
-		<textarea
-			bind:value={description}
+		<TooltippedInput
+			class="w-full"
+			item={form.description}
 			placeholder="'Informative videos about all types of things'"
-			class="border-2 border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300
-			h-32 resize-none
-			"
+			type="textarea"
 		/>
+
 		<div class="flex gap-2 justify-end w-full">
 			<button
 				class="w-1/2 bg-primary text-white rounded-md p-2 shadow-md hover:bg-primary-hover"

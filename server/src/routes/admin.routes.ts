@@ -5,7 +5,7 @@ const router = Router();
 
 router.post("/channel/", c.createPublicChannelCall);
 router.delete("/channel/:channelId", c.deletePublicChannelCall);
-router.put("/channel:id", c.updatePublicChannelCall);
+router.put("/channel/:channelId", c.updatePublicChannelCall);
 router.put("/channel/:channelId/schedule", c.putPublicChannelScheduleCall);
 
 

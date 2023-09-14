@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { db } from '../database/db';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -16,22 +17,43 @@ export const uploadImage = async (req: Request, res: Response, next: NextFunctio
                 return;
             }
         }
-
-
         const image = req.body;
-        console.log(image);
         let data = new FormData();
         let imageblob = new Blob([image], { type: 'image/png' });
         data.append('image', imageblob, 'image.png');
+        try {
 
-        let response = await axios.post('https://api.imgur.com/3/upload', data, {
+            let response = await axios.post('https://api.imgur.com/3/upload', data, {
+                headers: {
+                    'Authorization': `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+                }
+            });
+            await db.insertInto('image').values({ id: response.data.data.id, url: response.data.data.link, deleteHash: response.data.data.deletehash, createdAt: dayjs().unix() }).execute();
+            res.status(200).send(response.data);
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+
+    } catch (err: any) {
+        next(err)
+    }
+}
+
+
+export const deleteHangingImages = async () => {
+    // timestamp 
+    let fiveMinutesAgo = dayjs().subtract(5, 'minute').unix();
+    let images = await db.selectFrom('image').leftJoin('video', 'image.url', 'video.thumbnail').select(['deleteHash']).where("video.id", "is", null).where("image.createdAt", "<", fiveMinutesAgo).execute();
+
+    for (let image of images) {
+        const response = await axios.delete(`https://api.imgur.com/3/image/${image.deleteHash}`, {
             headers: {
                 'Authorization': `Bearer ${process.env.IMGUR_TOKEN}`,
             }
         });
-
-        res.status(200).send(response.data);
-    } catch (err: any) {
-        next(err)
+        if (response.status === 200) {
+            await db.deleteFrom('image').where("deleteHash", "=", image.deleteHash).execute();
+        }
     }
 }

@@ -17,17 +17,18 @@ const runMigrations = async () => {
         provider: new FileMigrationProvider({
             fs,
             path,
-            // This needs to be an absolute path.
             migrationFolder: path.join(__dirname, pathToMigrationsFolder),
         }),
     })
+    console.log("Folder contents")
+    console.log(await fs.readdir(path.join(__dirname, pathToMigrationsFolder)))
     if (params[0] === "down") {
         console.log("Rolling back migrations...")
         await migrator.migrateDown()
     }
     else {
         console.log("Applying migrations...")
-        await migrator.migrateUp()
+        await migrator.migrateToLatest()
     }
 }
 

@@ -4,7 +4,7 @@
 	export let data: PageServerData;
 </script>
 
-<div class="w-full h-full flex flex-col gap-4">
+<div class="w-full h-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden">
 	<h1 class="text-3xl text-primary">Public Channels</h1>
 	<ChannelGrid channels={data.channels.publicChannels} allowCreate />
 </div>

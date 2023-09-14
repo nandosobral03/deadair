@@ -52,7 +52,9 @@ export const getChannels = async (userId: string | undefined) => {
 
 
 export const getChannel = async (id: string, userId?: string) => {
+    console.log(id, userId);
     const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", id).executeTakeFirst();
+    console.log(channel);
     if (!channel) throw {
         status: 404,
         message: 'Channel not found'
@@ -71,11 +73,7 @@ export const deleteChannel = async (id: string, userId?: string) => {
 }
 
 export const updateChannel = async (id: string, channel: CreateChannel, userId?: string) => {
-    const channelInfo = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber']).where("id", "=", id).where("userId", "=", userId).executeTakeFirst();
-    if (!channelInfo) throw {
-        status: 404,
-        message: 'Channel not found'
-    }
+    let channelInfo = await getChannel(id, userId);
     let update: ChannelUpdate = {
         id: id,
         ...channel

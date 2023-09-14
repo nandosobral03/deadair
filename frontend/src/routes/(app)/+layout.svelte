@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import { modalStore } from '$lib/stores/modal.store';
 	import Modal from '$lib/components/Modal.svelte';
+	import Toaster from '$lib/components/Toaster.svelte';
 
 	const routes: {
 		name: string;
@@ -52,4 +53,5 @@
 	{#if $modalStore != undefined}
 		<Modal />
 	{/if}
+	<Toaster />
 </div>

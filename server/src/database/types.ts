@@ -6,6 +6,7 @@ export interface DeadAirDb {
     videoChannel: VideoChannelTable;
     schedule: ScheduleItemsTable;
     user: UsersTable;
+    image: ImageTable;
 }
 
 
@@ -24,6 +25,12 @@ export interface VideoChannelTable {
     userId: string;
 }
 
+export interface ImageTable {
+    id: string;
+    url: string;
+    deleteHash: string;
+    createdAt: number;
+}
 
 export type Video = Selectable<VideosTable>;
 export type VideoInsert = Insertable<VideosTable>;
