@@ -6,6 +6,7 @@ import channelRoutes from "./routes/channel.routes";
 import scheduleRoutes from "./routes/schedule.routes";
 import adminRoutes from "./routes/admin.routes";
 import utilRoutes from "./routes/util.routes";
+import userRoutes from "./routes/user.routes";
 const dotenv = require("dotenv");
 
 const app = express();
@@ -19,6 +20,7 @@ app.use("/api/channels", channelRoutes, errorMiddleware)
 app.use("/api/schedule", scheduleRoutes, errorMiddleware)
 app.use("/api/admin", adminRoutes, errorMiddleware)
 app.use("/api/utils", utilRoutes, errorMiddleware)
+app.use("/api", userRoutes, errorMiddleware)
 app.listen(port, () => {
     console.log(`Dead Air is live at  :${port}`);
 });

@@ -64,7 +64,7 @@
 		<ScheduleVideoWithDuration item={{ ...schedule[0], scheduleId: '1' }} />
 	</div>
 	<Divider class="min-h-fit" />
-	{#each schedule.slice(1) as item, i}
+	{#each schedule.slice(1).slice(0, 100) as item}
 		<div class="flex flex-row p-2 bg-gray-950 rounded-md relative hover:bg-gray-800 mx-4">
 			<ScheduleVideo item={{ ...item, scheduleId: '1' }} />
 		</div>

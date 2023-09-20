@@ -44,7 +44,6 @@
 
 	onMount(() => {
 		const interval = setInterval(() => {
-			console.log('asd');
 			let currentVideo = schedule[0];
 			const currentTime = timeSinceWeekStart();
 			if (currentVideo.endTime < currentTime) {
@@ -62,7 +61,7 @@
 			clearTimeout(interval);
 		};
 	});
-	let currentVideoUrl = `https://www.youtube.com/embed/${schedule[0].videoId}?start=${
+	$: currentVideoUrl = `https://www.youtube.com/embed/${schedule[0].videoId}?start=${
 		timeSinceWeekStart() - schedule[0].startTime
 	}&rel=0&controls=1&autoplay=1&mute=0`;
 </script>

@@ -17,7 +17,6 @@ export const putScheduleAPI = async (schedule: ScheduleCreateRequest[], channelI
                 }
             }
         )
-        console.log(data);
         return data;
     } else {
         const data = await axios.put(

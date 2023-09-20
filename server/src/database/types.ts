@@ -64,8 +64,8 @@ export type ScheduleItemInsert = Insertable<ScheduleItem>
 export interface UsersTable {
     id: string;
     username: string;
-    passwordHash: string;
-    salt: string;
+    passwordHash: string | null;
+    salt: string | null;
 }
 
 export type User = Selectable<UsersTable>;

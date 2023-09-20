@@ -5,7 +5,6 @@
 
 	export let data: PageData;
 	channelStore.set(data.channels);
-	console.log(data.channels);
 </script>
 
 <div class="w-full h-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden">

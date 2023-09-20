@@ -94,7 +94,9 @@
 	<Progress current={total.asSeconds()} total={7 * 24 * 60 * 60} />
 </span>
 <div class="flex w-full h-full overflow-x-hidden gap-4">
-	<div class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-2 relative px-4">
+	<div
+		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-2 relative px-4 overflow-x-hidden"
+	>
 		<button
 			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-white"
 			on:click={() => {

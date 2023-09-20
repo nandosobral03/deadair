@@ -7,6 +7,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Toaster from '$lib/components/Toaster.svelte';
 	import Loading from '$lib/components/Loading.svelte';
+	import { browser } from '$app/environment';
 
 	const routes: {
 		name: string;
@@ -22,6 +23,11 @@
 			name: 'About',
 			path: '/about',
 			icon: 'info'
+		},
+		{
+			name: 'Login',
+			path: '/login',
+			icon: 'login'
 		}
 	];
 </script>
@@ -46,7 +52,7 @@
 			{/each}
 		</section>
 
-		{#if localStorage.getItem('x-api-key')}
+		{#if browser && localStorage.getItem('x-api-key')}
 			<a href="/admin" class="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
 				<Icon icon="settings" /> <span class="ml-4"> Admin </span>
 			</a>
