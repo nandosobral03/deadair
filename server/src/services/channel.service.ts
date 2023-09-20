@@ -1,6 +1,6 @@
 import { db } from '../database/db';
 import { ChannelInsert, ChannelUpdate } from '../database/types';
-import { CreateChannel } from '../models/channel.model';
+import { CreateChannel, CreateSchedule, CreateScheduleItem } from '../models/channel.model';
 import { timeSinceWeekStart } from '../utils/time';
 import { ulid } from 'ulid'
 
@@ -106,9 +106,7 @@ export const getChannelSchedule = async (channelId: string, userId?: string) => 
     if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
 
 
-    const schedule = await db.selectFrom('schedule').select(['id', 'channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId)
-        .orderBy("startTime", "asc").execute();
-
+    const schedule = await db.selectFrom('schedule_item').select(['channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId).rightJoin('video', 'schedule_item.videoId', 'video.id').select(['video.title', 'video.thumbnail', 'video.duration', 'video.category']).execute();
     return schedule;
 }
 
@@ -117,19 +115,19 @@ export const clearChannelSchedule = async (channelId: string, userId?: string) =
     if (!channel) throw { status: 404, message: 'Channel not found' }
     if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
 
-    await db.deleteFrom('schedule').where("channelId", "=", channelId).execute();
+    await db.deleteFrom('schedule_item').where("channelId", "=", channelId).execute();
 }
 
-export const putChannelSchedule = async (channelId: string, schedule: any, userId?: string) => {
+export const putChannelSchedule = async (channelId: string, schedule: CreateSchedule, userId?: string) => {
     let channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
     if (!channel) throw { status: 404, message: 'Channel not found' }
     if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
 
-    clearChannelSchedule(channelId, userId);
+    await clearChannelSchedule(channelId, userId);
 
     let scheduleInsert: any[] = [];
-    for (let i = 0; i < schedule.length; i++) {
-        const item = schedule[i];
+    for (let i = 0; i < schedule.items.length; i++) {
+        const item = schedule.items[i];
         scheduleInsert.push({
             id: ulid(),
             channelId: channelId,
@@ -138,7 +136,7 @@ export const putChannelSchedule = async (channelId: string, schedule: any, userI
             endTime: item.endTime,
         })
     }
-    await db.insertInto('schedule').values(scheduleInsert).execute();
+    await db.insertInto('schedule_item').values(scheduleInsert).execute();
 }
 
 export const getCurrentVideo = async (channelId: string, userId?: string) => {
@@ -146,7 +144,7 @@ export const getCurrentVideo = async (channelId: string, userId?: string) => {
     if (!channel) throw { status: 404, message: 'Channel not found' }
     if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
     const now = timeSinceWeekStart();
-    const schedule = await db.selectFrom('schedule').select(['id', 'channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId)
+    const schedule = await db.selectFrom('schedule_item').select(['id', 'channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId)
         .where("startTime", "<=", now).where("endTime", ">=", now).executeTakeFirst();
     if (!schedule) return null;
 

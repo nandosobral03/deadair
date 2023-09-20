@@ -25,19 +25,20 @@ export type CreateSchedule = {
 }
 
 export type CreateScheduleItem = {
-    id: string;
     channelId: string;
     videoId: string;
     startTime: number;
+    endTime: number;
 }
 
 export const isCreateScheduleItem = (obj: any): obj is CreateScheduleItem => {
-    return typeof obj.id === 'string' &&
-        typeof obj.channelId === 'string' &&
+    return typeof obj.channelId === 'string' &&
         typeof obj.videoId === 'string' &&
         typeof obj.startTime === 'number' &&
-        obj.startTime < obj.endTime &&
-        obj.startTime >= 0;
+        obj.startTime >= 0 &&
+        typeof obj.endTime === 'number' &&
+        obj.endTime >= 0 &&
+        obj.startTime < obj.endTime;
 }
 
 export const isCreateSchedule = (obj: any): obj is CreateSchedule => {

@@ -4,4 +4,5 @@ export type Video = {
     thumbnail: string
     duration: number
     category: string
+    youtubeChannel: string
 }

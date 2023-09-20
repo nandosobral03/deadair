@@ -30,12 +30,14 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn('thumbnail', 'text', (col) => col.notNull())
         .addColumn('duration', 'integer', (col) => col.notNull())
         .addColumn('category', 'text', (col) => col.notNull())
+        .addColumn('youtubeChannel', 'text', (col) => col.notNull())
         .execute()
 
     await db.schema
         .createTable('videoChannel')
         .addColumn('videoId', 'text', (col) => col.references('video.id'))
         .addColumn('channelId', 'text', (col) => col.references('channel.id'))
+        .addColumn('userId', 'text', (col) => col.references('user.id'))
         .execute()
 
 

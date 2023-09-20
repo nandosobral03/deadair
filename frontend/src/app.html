@@ -15,6 +15,10 @@
 	</body>
 
 	<style>
+		:root {
+			--primary: #e01a4f;
+		}
+
 		html,
 		body {
 			height: 100%;
@@ -46,6 +50,27 @@
 					max-height: 8rem;
 				}
 			}
+		}
+
+		/* Works on Firefox */
+		* {
+			scrollbar-width: thin;
+			scrollbar-color: var(--primary) transparent;
+		}
+
+		/* Works on Chrome, Edge, and Safari */
+		*::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		*::-webkit-scrollbar-track {
+			background: transparent;
+		}
+
+		*::-webkit-scrollbar-thumb {
+			background-color: var(--primary);
+			border-radius: 20px;
+			border: 3px solid transparent;
 		}
 	</style>
 </html>

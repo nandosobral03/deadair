@@ -17,7 +17,7 @@
 <div
 	style={`border-left: 0.5rem solid ${colors[type]}`}
 	transition:fly={{ x: 200, duration: 300 }}
-	class="bg-gray-800 rounded-md flex flex-col gap-2 p-4 w-96 mr-4 shadow-md text-gray-100"
+	class="bg-gray-800 rounded-md flex flex-col gap-2 p-4 w-96 mr-4 shadow-md text-gray-100 pointer-events-auto"
 >
 	<span class="text-md font-semibold uppercase underline">{title}</span>
 	<span class="text-sm font-normal break-words">{text}</span>

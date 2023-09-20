@@ -23,7 +23,9 @@ const addVideoCall = async (req: Request, res: Response, next: any) => {
 
 const getVideosCall = async (req: Request, res: Response, next: any) => {
     try {
-        const videos = await getVideos();
+        let { channelId } = req.query as { channelId: string | undefined };
+        let userId = req.headers["userId"] as string | undefined;
+        const videos = await getVideos({ channelId, userId });
         res.status(200).send(videos);
     }
     catch (err: any) {
@@ -42,11 +44,11 @@ const getVideoCall = async (req: Request, res: Response, next: any) => {
     }
 }
 
-const addVideoToCategoryCall = async (req: Request, res: Response, next: any) => {
+const addVideoToChannelCall = async (req: Request, res: Response, next: any) => {
     try {
-        const { id, categoryId } = req.params;
+        const { id, channelId } = req.params;
         const userId = ""
-        await addVideoToChannel(id, categoryId, userId);
+        await addVideoToChannel(id, channelId, userId);
         res.status(200).send();
     }
     catch (err: any) {
@@ -55,4 +57,4 @@ const addVideoToCategoryCall = async (req: Request, res: Response, next: any) =>
 }
 
 
-export default { addVideoCall, getVideosCall, getVideoCall, addVideoToCategoryCall };
+export default { addVideoCall, getVideosCall, getVideoCall, addVideoToChannelCall };

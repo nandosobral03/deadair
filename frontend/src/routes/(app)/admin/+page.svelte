@@ -1,10 +1,13 @@
 <script lang="ts">
-	import type { PageServerData } from './$types';
+	import type { PageData, PageServerData } from './$types';
 	import ChannelGrid from '$lib/components/ChannelGrid.svelte';
-	export let data: PageServerData;
+	import { channelStore } from '$lib/utils/channel';
+
+	export let data: PageData;
+	channelStore.set(data.channels);
 </script>
 
 <div class="w-full h-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden">
 	<h1 class="text-3xl text-primary">Public Channels</h1>
-	<ChannelGrid channels={data.channels.publicChannels} allowCreate />
+	<ChannelGrid type="publicChannels" allowCreate />
 </div>

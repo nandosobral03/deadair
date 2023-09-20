@@ -4,7 +4,8 @@
 	import { toastStore } from '$lib/stores/toast.store';
 	import TooltippedInput from '$lib/components/TooltippedInput.svelte';
 	import { modalStore } from '$lib/stores/modal.store';
-	let type = 'public';
+	import { loadingStore } from '$lib/stores/loading.store';
+	export let type = 'publicChannels';
 	let thumbnail: File | null = null;
 	let form = {
 		name: {
@@ -66,6 +67,7 @@
 		if (!validateForm()) return;
 		let { name, description, channelNumber } = getValues();
 		try {
+			loadingStore.setLoading(true);
 			const { id } = await createChannelAPI(name, description, channelNumber);
 			toastStore.addToast({
 				type: 'success',
@@ -92,6 +94,8 @@
 				title: 'Channel Creation Failed',
 				text: `${error?.response?.data?.message || 'Something went wrong!'}`
 			});
+		} finally {
+			loadingStore.setLoading(false);
 		}
 	};
 
@@ -118,8 +122,12 @@
 		/>
 
 		<div class="flex gap-2 justify-end w-full">
+			{#if thumbnail}
+				<img src={URL.createObjectURL(thumbnail)} class="w-1/5 aspect-square m-auto" />
+			{/if}
+
 			<button
-				class="w-1/2 bg-primary text-white rounded-md p-2 shadow-md hover:bg-primary-hover"
+				class="w-64 bg-primary text-white rounded-md p-2 shadow-md hover:bg-primary-hover h-10"
 				on:click={() => fileInput.click()}
 			>
 				Upload Thumbnail

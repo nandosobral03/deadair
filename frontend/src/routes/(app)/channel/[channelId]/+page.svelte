@@ -1,10 +1,27 @@
 <script lang="ts">
+	import ChannelHeader from '$lib/components/ChannelHeader.svelte';
+	import Schedule from '$lib/components/Schedule.svelte';
+	import { onMount } from 'svelte';
 	import type { PageServerData } from './$types';
-
+	import { invalidate } from '$app/navigation';
+	import { page } from '$app/stores';
 	export let data: PageServerData;
 
-	console.log(data);
+	onMount(() => {
+		invalidate($page.url);
+	});
 </script>
 
-<style lang="scss">
-</style>
+<ChannelHeader channel={data.channel} />
+<Schedule
+	videos={data.videos}
+	schedule={data.schedule.map((s, index) => {
+		return {
+			...s,
+			scheduleId: index + '',
+			duration: s.endTime - s.startTime,
+			thumbnail: data.videos.find((v) => v.id === s.videoId)?.thumbnail || '',
+			title: data.videos.find((v) => v.id === s.videoId)?.title || ''
+		};
+	})}
+/>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { modalStore } from '$lib/stores/modal.store';
+	import { fly } from 'svelte/transition';
 </script>
 
 {#if $modalStore}
@@ -12,12 +13,13 @@
 	>
 		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 		<div
-			class={`${
-				$modalStore?.size || 'sm'
-			} bg-gray-900 flex flex-col gap-4 p-6 z-30 straight-shadow`}
+			class={`${$modalStore?.size || 'sm'} bg-gray-900 flex flex-col gap-4 p-6 z-30 straight-shadow
+				overflow-auto
+			`}
 			on:click|stopPropagation
 			on:keydown|stopPropagation
 			role="dialog"
+			transition:fly={{ y: 100, duration: 150 }}
 		>
 			<header class="text-primary text-2xl border-b-primary border-b-2 pb-2">
 				{$modalStore?.title}
@@ -29,17 +31,17 @@
 
 <style lang="scss">
 	.sm {
-		height: clamp(18rem, 70%, 22rem);
+		height: clamp(20rem, 70%, 22rem);
 		width: 30rem;
 	}
 
 	.md {
-		height: clamp(20rem, 70%, 30rem);
+		height: clamp(24rem, 70%, 32rem);
 		width: 40rem;
 	}
 
 	.lg {
-		height: clamp(22rem, 70%, 40rem);
+		height: clamp(24rem, 70%, 40rem);
 		width: 50rem;
 	}
 </style>

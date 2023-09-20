@@ -4,7 +4,7 @@ export interface DeadAirDb {
     video: VideosTable;
     channel: ChannelsTable;
     videoChannel: VideoChannelTable;
-    schedule: ScheduleItemsTable;
+    schedule_item: ScheduleItemsTable;
     user: UsersTable;
     image: ImageTable;
 }
@@ -17,12 +17,13 @@ export interface VideosTable {
     thumbnail: string;
     duration: number;
     category: string;
+    youtubeChannel: string;
 }
 
 export interface VideoChannelTable {
     videoId: string;
     channelId: string;
-    userId: string;
+    userId: string | null;
 }
 
 export interface ImageTable {

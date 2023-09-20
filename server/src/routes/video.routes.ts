@@ -6,5 +6,5 @@ const router = Router();
 router.get("/", c.getVideosCall);
 router.get("/:id", c.getVideoCall);
 router.post("/", c.addVideoCall);
-router.put("/:id/category/:categoryId", c.addVideoToCategoryCall);
+router.put("/:id/channel/:channelId", c.addVideoToChannelCall);
 export default router;
