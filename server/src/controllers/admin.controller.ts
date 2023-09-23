@@ -7,17 +7,13 @@ import { NextFunction, Request, Response } from "express"
 import { deleteChannel, insertChannel, putChannelSchedule, updateChannel } from "../services/channel.service";
 import { isCreateChannel, isCreateSchedule } from "../models/channel.model";
 import { addVideoToChannel, removeVideoFromChannel } from "../services/video.service";
+import { TokenPayload } from "../middleware/jwt.middleware";
 
 
 const createPublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
-
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateChannel(req.body)) {
             res.status(400).send("Bad Request");
             return;
@@ -32,13 +28,8 @@ const createPublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const updatePublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
-
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateChannel(req.body)) {
             res.status(400).send("Bad Request");
             return;
@@ -55,13 +46,8 @@ const updatePublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const deletePublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
-
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const id = req.params.channelId;
         await deleteChannel(id);
         res.status(204).send();
@@ -77,13 +63,8 @@ const deletePublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const putPublicChannelScheduleCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
-
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateSchedule(req.body)) {
             res.status(400).send("Bad Request");
             return;
@@ -100,11 +81,8 @@ const putPublicChannelScheduleCall = async (req: Request, res: Response, next: N
 
 const addVideoToChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const { videoId, channelId } = req.params;
         await addVideoToChannel(videoId, channelId);
         res.status(200).send();
@@ -118,11 +96,8 @@ const addVideoToChannelCall = async (req: Request, res: Response, next: NextFunc
 
 const removeVideoFromChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const key = req.headers["x-api-key"];
-        if (key !== process.env.API_KEY) {
-            res.status(401).send("Unauthorized");
-            return;
-        }
+        const payload: TokenPayload = res.locals.user;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const { videoId, channelId } = req.params;
         await removeVideoFromChannel(videoId, channelId);
         res.status(200).send();

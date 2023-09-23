@@ -66,6 +66,7 @@ export interface UsersTable {
     username: string;
     passwordHash: string | null;
     salt: string | null;
+    isAdmin: 0 | 1;
 }
 
 export type User = Selectable<UsersTable>;

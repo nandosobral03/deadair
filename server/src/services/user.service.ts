@@ -2,11 +2,12 @@ import { ulid } from "ulid";
 import { db } from "../database/db"
 import jwt from 'jsonwebtoken'
 import { UserInsert } from "../database/types";
+import { TokenPayload } from "../middleware/jwt.middleware";
 
 export const createGoogleUserAndGetToken = async (name: string, id: string) => {
     const user = await db.selectFrom('user').select('id').where('id', "=", id).executeTakeFirst();
     if (!user) {
-        await db.insertInto('user').values({ id, username: name, passwordHash: null, salt: null }).execute();
+        await db.insertInto('user').values({ id, username: name, passwordHash: null, salt: null, isAdmin: 0 }).execute();
     }
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not set')
     const token = jwt.sign({ name, id }, process.env.JWT_SECRET);
@@ -28,14 +29,15 @@ export const createUser = async (username: string, password: string) => {
         id: ulid(),
         username,
         passwordHash: passwordHash.passwordHash,
-        salt
+        salt,
+        isAdmin: 0
     }
     await db.insertInto('user').values(insert).execute();
     return;
 }
 
 export const login = async (username: string, password: string) => {
-    const user = await db.selectFrom('user').select(["id", "passwordHash", "salt"]).where('username', "=", username).executeTakeFirst();
+    const user = await db.selectFrom('user').select(["id", "passwordHash", "salt", "isAdmin"]).where('username', "=", username).executeTakeFirst();
     if (!user) {
         throw {
             status: 401,
@@ -53,8 +55,16 @@ export const login = async (username: string, password: string) => {
         }
     }
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not set')
-    const token = jwt.sign({ username, id: user.id }, process.env.JWT_SECRET);
-    return token;
+    let payload: TokenPayload = {
+        username,
+        sub: user.id,
+        iat: Math.floor(Date.now() / 1000) - 30,
+        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7 * 365)
+    }
+    if (user.isAdmin) {
+        payload.isAdmin = true;
+    }
+    return jwt.sign(payload, process.env.JWT_SECRET);
 }
 
 

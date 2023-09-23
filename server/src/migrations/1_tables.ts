@@ -8,6 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn('username', 'text', (col) => col.notNull())
         .addColumn('passwordHash', 'text')
         .addColumn('salt', 'text')
+        .addColumn('isAdmin', 'boolean', (col) => col.notNull().defaultTo(false))
         .execute()
 
     await db.schema

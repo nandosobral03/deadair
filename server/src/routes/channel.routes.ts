@@ -1,13 +1,13 @@
 import { Router } from "express";
 import c from "../controllers/channel.controller";
+import { jwtMiddleware, jwtMiddlewareOptional } from "../middleware/jwt.middleware";
 
 const router = Router();
 
-// router.get("/:id", c.getChannelScheduleCall);
-router.get("/", c.getChannelsCall);
-router.post("/", c.addChannelCall);
-router.delete("/:id", c.deleteChannelCall);
-router.put("/:id", c.updateChannelCall);
-router.get("/:id", c.getChannelCall);
+router.get("/", jwtMiddlewareOptional, c.getChannelsCall);
+router.post("/", jwtMiddleware, c.addChannelCall);
+router.delete("/:id", jwtMiddleware, c.deleteChannelCall);
+router.put("/:id", jwtMiddleware, c.updateChannelCall);
+router.get("/:id", jwtMiddlewareOptional, c.getChannelCall);
 
 export default router;

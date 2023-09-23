@@ -1,6 +1,7 @@
 import { isCreateVideoModel } from "../models/video.model"
 import { Request, Response } from "express";
 import { createVideo, getVideos, getVideo, addVideoToChannel } from "../services/video.service";
+import { TokenPayload } from "../middleware/jwt.middleware";
 
 const addVideoCall = async (req: Request, res: Response, next: any) => {
     try {
@@ -24,7 +25,8 @@ const addVideoCall = async (req: Request, res: Response, next: any) => {
 const getVideosCall = async (req: Request, res: Response, next: any) => {
     try {
         let { channelId } = req.query as { channelId: string | undefined };
-        let userId = req.headers["userId"] as string | undefined;
+        const payload: TokenPayload = res.locals.user;
+        const userId = payload.sub
         const videos = await getVideos({ channelId, userId });
         res.status(200).send(videos);
     }
@@ -47,7 +49,8 @@ const getVideoCall = async (req: Request, res: Response, next: any) => {
 const addVideoToChannelCall = async (req: Request, res: Response, next: any) => {
     try {
         const { id, channelId } = req.params;
-        const userId = ""
+        const payload: TokenPayload = res.locals.user;
+        const userId = payload.sub
         await addVideoToChannel(id, channelId, userId);
         res.status(200).send();
     }

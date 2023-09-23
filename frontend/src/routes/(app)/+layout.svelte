@@ -1,9 +1,7 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import '../../app.postcss';
-	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
-	import { modalStore } from '$lib/stores/modal.store';
 	import Modal from '$lib/components/Modal.svelte';
 	import Toaster from '$lib/components/Toaster.svelte';
 	import Loading from '$lib/components/Loading.svelte';
@@ -23,11 +21,6 @@
 			name: 'About',
 			path: '/about',
 			icon: 'info'
-		},
-		{
-			name: 'Login',
-			path: '/login',
-			icon: 'login'
 		}
 	];
 </script>

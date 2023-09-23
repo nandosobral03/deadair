@@ -1,8 +1,10 @@
 import { Router } from "express";
 import c from "../controllers/admin.controller";
+import { jwtMiddleware } from "../middleware/jwt.middleware";
 
 const router = Router();
 
+router.use(jwtMiddleware);
 router.post("/channel/", c.createPublicChannelCall);
 router.delete("/channel/:channelId", c.deletePublicChannelCall);
 router.put("/channel/:channelId", c.updatePublicChannelCall);

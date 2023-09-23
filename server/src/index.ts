@@ -7,6 +7,7 @@ import scheduleRoutes from "./routes/schedule.routes";
 import adminRoutes from "./routes/admin.routes";
 import utilRoutes from "./routes/util.routes";
 import userRoutes from "./routes/user.routes";
+import { jwtMiddleware } from "./middleware/jwt.middleware";
 const dotenv = require("dotenv");
 
 const app = express();
