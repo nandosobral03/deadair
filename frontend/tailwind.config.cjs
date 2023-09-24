@@ -5,9 +5,9 @@ const config = {
 	theme: {
 		extend: {
 			colors: {
-				primary: "#E01A4F",
-				"primary-hover": "#E73665",
-				"primary-dim": "#C01A4F",
+				primary: "#d31723",
+				"primary-hover": "#E93541",
+				"primary-dim": "#DC1826",
 			},
 			width: {
 				"1/8": "12.5%",

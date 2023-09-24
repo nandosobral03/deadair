@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { tokenStore } from '$lib/stores/token.store';
 	import Icon from './Icon.svelte';
 
 	export let routes: {
@@ -21,12 +22,12 @@
 	"
 	style={expanded ? 'width: 12rem;' : 'width: 4rem;'}
 >
-	<button class=" text-gray-200 hoverable" on:click={() => (expanded = !expanded)}>
+	<button class="text-gray-200 hoverable" on:click={() => (expanded = !expanded)}>
 		<Icon icon={expanded ? 'segment' : 'menu'} />
 	</button>
 
 	<section class="flex flex-col gap-4">
-		{#each routes as route}
+		{#each routes.filter((route) => !route.condition || route.condition()) as route}
 			<a
 				class="flex items-center p-2 hover:bg-gray-700 cursor-pointer rounded-md transition-all duration-200 ease-in-out"
 				class:bg-primary-dim={$page.url.pathname === `${route.path}`}
@@ -40,6 +41,36 @@
 			</a>
 		{/each}
 	</section>
+
+	<div class="mt-auto w-full">
+		{#if $tokenStore}
+			<form class="contents" action="/logout" method="POST">
+				<button
+					class="flex w-full items-center p-2 hover:bg-gray-700 cursor-pointer rounded-md transition-all duration-200 ease-in-out"
+					class:bg-primary-dim={$page.url.pathname === '/login'}
+					class:px-auto={!expanded}
+					type="submit"
+				>
+					<Icon icon="logout" />
+					{#if expanded}
+						<span class="ml-4"> Logout </span>
+					{/if}
+				</button>
+			</form>
+		{:else}
+			<a
+				class="flex items-center p-2 hover:bg-gray-700 cursor-pointer rounded-md transition-all duration-200 ease-in-out"
+				class:bg-primary-dim={$page.url.pathname === '/login'}
+				class:px-auto={!expanded}
+				href="/login"
+			>
+				<Icon icon="login" />
+				{#if expanded}
+					<span class="ml-4"> Login </span>
+				{/if}
+			</a>
+		{/if}
+	</div>
 </nav>
 
 <style lang="scss">
