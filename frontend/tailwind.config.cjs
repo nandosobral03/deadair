@@ -6,7 +6,8 @@ const config = {
 		extend: {
 			colors: {
 				primary: "#E01A4F",
-				"primary-hover": "#E73665"
+				"primary-hover": "#E73665",
+				"primary-dim": "#C01A4F",
 			},
 			width: {
 				"1/8": "12.5%",

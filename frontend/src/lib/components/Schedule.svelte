@@ -7,6 +7,7 @@
 	import dayjs from 'dayjs';
 	export let schedule: ScheduleCreate[] = [];
 	export let videos: Video[] = [];
+	export let channel: Channel;
 	import Progress from './Progress.svelte';
 	import ScheduleVideo from './ScheduleVideo.svelte';
 	import Divider from './Divider.svelte';
@@ -14,6 +15,9 @@
 	import { page } from '$app/stores';
 	import { putScheduleAPI } from '$lib/utils/schedule';
 	import { toastStore } from '$lib/stores/toast.store';
+	import type { Channel } from '$lib/model/channel.model';
+	import { tokenStore } from '$lib/stores/token.store';
+	import { parseHTTPError } from '$lib/utils/error';
 
 	dayjs.extend(duration);
 	$: total = dayjs.duration(
@@ -26,14 +30,15 @@
 	const handleSave = async (schedule: ScheduleCreate[]) => {
 		let items: ScheduleCreateRequest[] = schedule.map((s) => {
 			return {
-				channelId: $page.params.channelId,
+				channelId: channel.id,
 				videoId: s.videoId,
 				startTime: s.startTime,
 				endTime: s.startTime + s.duration
 			};
 		});
 		try {
-			await putScheduleAPI(items, $page.params.channelId);
+			console.log(channel);
+			await putScheduleAPI(items, channel.id, $tokenStore!, channel.userId ? 'user' : 'public');
 			toastStore.addToast({
 				title: 'Success',
 				text: 'Schedule updated',
@@ -42,7 +47,7 @@
 		} catch (e) {
 			toastStore.addToast({
 				title: 'Error',
-				text: 'Failed to save schedule',
+				text: parseHTTPError(e, 'Failed to update schedule'),
 				type: 'error'
 			});
 		}
@@ -105,7 +110,7 @@
 			>Save Schedule
 		</button>
 		{#if schedule.length == 0}
-			<div class="text-gray-200 mt-32 text-center">
+			<div class="text-gray-200 h-full text-center flex flex-col justify-center items-center">
 				<img src="/empty.png" alt="Placeholder" class="w-1/2 mx-auto" />
 				<p>No schedule items yet! Add one by dragging a video from the sidebar.</p>
 			</div>

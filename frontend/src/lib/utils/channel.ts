@@ -4,93 +4,62 @@ import { loadingStore } from "$lib/stores/loading.store";
 import axios from "axios";
 import { writable } from "svelte/store";
 
-export const createChannelAPI = async (name: string, description: string, channelNumber: number, userId?: string) => {
+export const createChannelAPI = async (name: string, description: string, channelNumber: number, token: string, type: 'public' | 'user') => {
     loadingStore.setMessage('Creating channel...');
-    if (!userId) {
-        const data = await axios.post<{ id: string }>(
-            `${PUBLIC_API_URL}/admin/channel/`,
-            {
-                name,
-                description,
-                channelNumber,
-                thumbnail: ''
-            },
-            {
-                headers: {
-                    'x-api-key': localStorage.getItem('x-api-key')
-                }
+    const url = type === 'public' ? `${PUBLIC_API_URL}/admin/channel/` : `${PUBLIC_API_URL}/channels/`;
+    const data = await axios.post<{ id: string }>(url, {
+        name,
+        description,
+        channelNumber,
+        thumbnail: ''
+    },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
-        );
+        }
+    );
+    if (type === 'public') {
         channelStore.update((all) => ({ ...all, publicChannels: [...all.publicChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '' }] }));
-        return { id: data.data.id }
     } else {
-        const data = await axios.post<{ id: string }>(
-            `${PUBLIC_API_URL}/channels/`,
-            {
-                name,
-                description,
-                channelNumber,
-                thumbnail: ''
-            },
-            {
-                headers: {
-                    'user-id': userId
-                }
-            }
-        );
-        channelStore.update((all) => ({ ...all, privateChannels: [...all.privateChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '' }] }));
-        return { id: data.data.id }
+        channelStore.update((all) => ({ ...all, userChannels: [...all.userChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '' }] }));
     }
+    return { id: data.data.id }
 }
 
 
-export const updateChannelAPI = async (id: string, name: string, description: string, channelNumber: number, thumbnail: string, userId?: string) => {
+export const updateChannelAPI = async (id: string, name: string, description: string, channelNumber: number, thumbnail: string, token: string, type: 'public' | 'user') => {
     loadingStore.setMessage('Updating channel...');
-    if (!userId) {
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/admin/channel/${id}`,
-            {
-                name,
-                description,
-                channelNumber,
-                thumbnail
-            },
-            {
-                headers: {
-                    'x-api-key': localStorage.getItem('x-api-key')
-                }
+    const url = token ? `${PUBLIC_API_URL}/channels/${id}` : `${PUBLIC_API_URL}/admin/channel/${id}`;
+    const data = await axios.put(
+        url,
+        {
+            name,
+            description,
+            channelNumber,
+            thumbnail
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
-        );
+        }
+    );
+    if (type === 'public') {
         channelStore.update((all) => ({ ...all, publicChannels: all.publicChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail } } else { return channel } }) }));
-        return data;
     } else {
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/channels/${id}`,
-            {
-                name,
-                description,
-                channelNumber,
-                thumbnail
-            },
-            {
-                headers: {
-                    'user-id': userId
-                }
-            }
-        );
-        channelStore.update((all) => ({ ...all, privateChannels: all.privateChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail } } else { return channel } }) }));
-        return data;
-
+        channelStore.update((all) => ({ ...all, userChannels: all.userChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail } } else { return channel } }) }));
     }
+    return data;
 }
 
 
 export const channelStore = writable<{
     publicChannels: Channel[],
-    privateChannels: Channel[]
+    userChannels: Channel[]
 }>(
     {
         publicChannels: [],
-        privateChannels: []
+        userChannels: []
     }
 );

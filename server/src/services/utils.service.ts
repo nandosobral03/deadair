@@ -2,15 +2,19 @@ import { NextFunction, Request, Response } from 'express';
 import { db } from '../database/db';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { TokenPayload } from '../middleware/jwt.middleware';
 
 export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.headers["x-api-key"] !== process.env.API_KEY) {
-            const userId = req.headers["user-id"] as string;
+            const payload: TokenPayload = res.locals.user;
+            const userId = payload?.sub;
+            console.log(payload);
             if (!userId) {
                 res.status(401).send("Unauthorized");
                 return;
             }
+            console.log(userId);
             const user = await db.selectFrom('user').select(['id']).where("id", "=", userId).executeTakeFirst();
             if (!user) {
                 res.status(401).send("Unauthorized");

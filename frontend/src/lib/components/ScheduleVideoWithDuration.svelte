@@ -5,7 +5,7 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	export let item: ScheduleCreate;
 	export let showDelete: boolean = false;
-	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const dispatch = createEventDispatcher();
 
 	const handleDelete = () => {

@@ -51,6 +51,7 @@ export const getVideo = async (id: string) => {
 
 
 export const addVideoToChannel = async (id: string, channelId: string, userId?: string) => {
+    console.log(id, channelId, userId);
     const storedVideo = await db.selectFrom('video').select(['id']).where("id", "=", id).executeTakeFirst();
     if (!storedVideo) {
         await createVideo(id);

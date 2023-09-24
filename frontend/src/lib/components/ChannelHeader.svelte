@@ -40,7 +40,7 @@
 		{#if allowWatch}
 			<a
 				class="flex items-center justify-center bg-primary rounded-md w-48 h-12 text-white"
-				href="/watch/{channel.id}"
+				href="/watch/{channel.channelNumber}"
 			>
 				Watch Now
 				<Icon icon="play_arrow" />

@@ -8,12 +8,13 @@
 	export let allowCreate: boolean = false;
 	export let type: keyof typeof $channelStore = 'publicChannels';
 	const handleError = (ev: any) => (ev.target.src = '/placeholder.svg');
+
 	const createChannel = () => {
 		modalStore.set({
 			title: 'Create Channel',
 			component: CreateChannel,
 			props: {
-				type: 'public'
+				type: type == 'userChannels' ? 'user' : 'public'
 			},
 			size: 'md'
 		});
@@ -21,9 +22,9 @@
 
 	const handleSelect = (channel: any) => {
 		if (allowCreate) {
-			window.location.href = `/channel/${channel.id}`;
+			window.location.href = `/channel/${channel.channelNumber}`;
 		} else {
-			window.location.href = `/browse/${channel.id}`;
+			window.location.href = `/browse/${channel.channelNumber}`;
 		}
 	};
 </script>

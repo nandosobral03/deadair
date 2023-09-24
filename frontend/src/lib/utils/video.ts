@@ -6,62 +6,20 @@ import { writable } from "svelte/store";
 
 export const videoStore = writable<Map<string, Video[]>>(new Map());
 
-export const addVideoToChannel = async (channelId: string, videoId: string, userId?: string) => {
+export const addVideoToChannel = async (channelId: string, videoId: string, token: string, type: "user" | "public") => {
     loadingStore.setMessage('Adding video to channel...');
-    if (!userId) {
-        // video/:videoId/channel/:channelId
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/admin/video/${videoId}/channel/${channelId}`, {},
-            {
-                headers: {
-                    'x-api-key': localStorage.getItem('x-api-key')
-                }
-            }
-        );
-        const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
-        videoStore.update((all) => all.set(channelId, [...all.get(channelId) || [], video.data]));
-        return data;
-    } else {
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/videos/${videoId}/channel/${channelId}`, {},
-            {
-                headers: {
-                    'user-id': userId
-                }
-            }
-        );
-        const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
-        videoStore.update((all) => all.set(channelId, [...all.get(channelId) || [], video.data]));
-        return data;
-    }
+    const url = type === 'public' ? `${PUBLIC_API_URL}/admin/video/${videoId}/channel/${channelId}` : `${PUBLIC_API_URL}/videos/${videoId}/channel/${channelId}`;
+    const data = await axios.put(url, {}, { headers: { 'Authorization': `Bearer ${token}` } });
+    const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
+    videoStore.update((all) => all.set(channelId, [...all.get(channelId) || [], video.data]));
+    return data;
 }
 
-export const removeVideoFromChannel = async (channelId: string, videoId: string, userId?: string) => {
+export const removeVideoFromChannel = async (channelId: string, videoId: string, token: string, type: "user" | "public") => {
     loadingStore.setMessage('Removing video from channel...');
-    if (!userId) {
-        // video/:videoId/channel/:channelId
-        const data = await axios.delete(
-            `${PUBLIC_API_URL}/admin/video/${videoId}/channel/${channelId}`,
-            {
-                headers: {
-                    'x-api-key': localStorage.getItem('x-api-key')
-                }
-            }
-        );
-        const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
-        videoStore.update((all) => all.set(channelId, (all.get(channelId) || []).filter((v) => v.id !== video.data.id)));
-        return data;
-    } else {
-        const data = await axios.delete(
-            `${PUBLIC_API_URL}/videos/${videoId}/channel/${channelId}`,
-            {
-                headers: {
-                    'user-id': userId
-                }
-            }
-        );
-        const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
-        videoStore.update((all) => all.set(channelId, (all.get(channelId) || []).filter((v) => v.id !== video.data.id)));
-        return data;
-    }
+    const url = type === 'public' ? `${PUBLIC_API_URL}/admin/video/${videoId}/channel/${channelId}` : `${PUBLIC_API_URL}/videos/${videoId}/channel/${channelId}`;
+    const data = await axios.delete(url, { headers: { 'Authorization': `Bearer ${token}` } });
+    const video = await axios.get<Video>(`${PUBLIC_API_URL}/videos/${videoId}`);
+    videoStore.update((all) => all.set(channelId, (all.get(channelId) || []).filter((v) => v.id !== video.data.id)));
+    return data;
 }

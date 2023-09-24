@@ -5,7 +5,8 @@
 	import TooltippedInput from '$lib/components/TooltippedInput.svelte';
 	import { modalStore } from '$lib/stores/modal.store';
 	import { loadingStore } from '$lib/stores/loading.store';
-	export let type = 'publicChannels';
+	import { tokenStore } from '$lib/stores/token.store';
+	export let type: 'user' | 'public' = 'public';
 	let thumbnail: File | null = null;
 	let form = {
 		name: {
@@ -68,7 +69,7 @@
 		let { name, description, channelNumber } = getValues();
 		try {
 			loadingStore.setLoading(true);
-			const { id } = await createChannelAPI(name, description, channelNumber);
+			const { id } = await createChannelAPI(name, description, channelNumber, $tokenStore!, type);
 			toastStore.addToast({
 				type: 'success',
 				title: 'Channel Created',
@@ -76,9 +77,17 @@
 			});
 			if (thumbnail) {
 				try {
-					const imageData = await uploadImage(thumbnail);
+					const imageData = await uploadImage(thumbnail, $tokenStore!);
 					const imageURL = imageData.data.link;
-					await updateChannelAPI(id, name, description, channelNumber, imageURL);
+					await updateChannelAPI(
+						id,
+						name,
+						description,
+						channelNumber,
+						imageURL,
+						$tokenStore!,
+						type
+					);
 				} catch {
 					toastStore.addToast({
 						type: 'error',

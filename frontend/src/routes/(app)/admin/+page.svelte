@@ -2,7 +2,6 @@
 	import type { PageData, PageServerData } from './$types';
 	import ChannelGrid from '$lib/components/ChannelGrid.svelte';
 	import { channelStore } from '$lib/utils/channel';
-
 	export let data: PageData;
 	channelStore.set(data.channels);
 </script>

@@ -26,6 +26,7 @@ const getVideosCall = async (req: Request, res: Response, next: any) => {
     try {
         let { channelId } = req.query as { channelId: string | undefined };
         const payload: TokenPayload = res.locals.user;
+        console.log(payload);
         const userId = payload.sub
         const videos = await getVideos({ channelId, userId });
         res.status(200).send(videos);

@@ -9,32 +9,39 @@ export type TokenPayload = {
     iat: number;
 }
 
+const isTokenPayload = (payload: any): payload is TokenPayload => {
+    return payload.username && payload.sub && payload.exp && payload.iat;
+}
 
 export const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({ message: 'No token provided' });
+        throw { status: 401, message: 'No token provided' };
     }
 
     const token = authHeader.replace('Bearer ', '');
 
     if (!process.env.JWT_SECRET) {
-        return res.status(500).json({ message: 'JWT_SECRET not set' });
+        throw { status: 500, message: 'JWT_SECRET not set' };
     }
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
         if (!payload) {
-            return res.status(401).json({ message: 'Invalid token' });
+            throw { status: 401, message: 'Invalid token' };
         }
         if (payload.exp < Date.now() / 1000) {
-            return res.status(401).json({ message: 'Token expired' });
+            throw { status: 401, message: 'Token expired' };
         }
+        if (!isTokenPayload(payload)) {
+            throw { status: 401, message: 'Invalid token' };
+        }
+
         res.locals.user = payload;
 
         next();
     } catch (error) {
-        return res.status(500).json({ message: 'Internal Server Error' });
+        return next(error);
     }
 };
 

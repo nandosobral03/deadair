@@ -174,3 +174,15 @@ export const getScheduleSummary = async (channelId: string, userId?: string) => 
         next: null,
     }
 }
+
+export const getChannelByChannelNumber = async (channelNumber: number, userId?: string) => {
+    let statement = db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("channelNumber", "=", channelNumber);
+    const channel = await statement.where("userId", "is", undefined).executeTakeFirst();
+    if (channel) return channel;
+    else {
+        if (!userId) throw { status: 404, message: 'Channel not found' }
+        const channel = await statement.where("userId", "=", userId).executeTakeFirst();
+        if (channel) return channel;
+        else throw { status: 404, message: 'Channel not found' }
+    }
+}

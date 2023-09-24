@@ -3,33 +3,20 @@ import type { ScheduleCreateRequest } from "$lib/model/schedule.model";
 import { loadingStore } from "$lib/stores/loading.store";
 import axios from "axios";
 
-export const putScheduleAPI = async (schedule: ScheduleCreateRequest[], channelId: string, userId?: string) => {
+export const putScheduleAPI = async (schedule: ScheduleCreateRequest[], channelId: string, token: string, type: "user" | "public") => {
     loadingStore.setMessage('Updating schedule...');
-    if (!userId) {
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/admin/channel/${channelId}/schedule`,
-            {
-                items: schedule
-            },
-            {
-                headers: {
-                    'x-api-key': localStorage.getItem('x-api-key')
-                }
+
+    const url = type === "public" ? `${PUBLIC_API_URL}/admin/channel/${channelId}/schedule` : `${PUBLIC_API_URL}/schedule/${channelId}`;
+    const data = await axios.put(
+        url,
+        {
+            items: schedule
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
-        )
-        return data;
-    } else {
-        const data = await axios.put(
-            `${PUBLIC_API_URL}/channel/${channelId}/schedule`,
-            {
-                items: schedule
-            },
-            {
-                headers: {
-                    'user-id': userId
-                }
-            }
-        )
-        return data;
-    }
+        }
+    )
+    return data;
 }

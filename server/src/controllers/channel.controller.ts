@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { clearChannelSchedule, deleteChannel, getChannel, getChannelSchedule, getChannels, getCurrentVideo, getScheduleSummary, insertChannel, putChannelSchedule, updateChannel } from "../services/channel.service"
+import { clearChannelSchedule, deleteChannel, getChannel, getChannelByChannelNumber, getChannelSchedule, getChannels, getCurrentVideo, getScheduleSummary, insertChannel, putChannelSchedule, updateChannel } from "../services/channel.service"
 import { isCreateChannel, isCreateSchedule } from "../models/channel.model"
 import { TokenPayload } from "../middleware/jwt.middleware";
 
@@ -18,6 +18,7 @@ const getChannelsCall = async (req: Request, res: Response, next: NextFunction) 
 const getChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payload: TokenPayload = res.locals.user;
+        console.log(payload);
         const userId = payload?.sub
         const id = req.params.id
         const channel = await getChannel(id, userId)
@@ -78,7 +79,7 @@ const getChannelScheduleCall = async (req: Request, res: Response, next: NextFun
     try {
         const channelId = req.params.channelId
         const payload: TokenPayload = res.locals.user;
-        const userId = payload.sub
+        const userId = payload?.sub
         const schedule = await getChannelSchedule(channelId, userId)
         res.status(200).json(schedule)
     }
@@ -109,6 +110,7 @@ const clearChannelScheduleCall = async (req: Request, res: Response, next: NextF
         const channelId = req.params.channelId
         const payload: TokenPayload = res.locals.user;
         const userId = payload.sub
+
         await clearChannelSchedule(channelId, userId)
         res.status(200).json({ message: 'Schedule cleared' })
     }
@@ -144,6 +146,19 @@ const getScheduleSummaryCall = async (req: Request, res: Response, next: NextFun
     }
 }
 
+const getChannelByChannelNumberCall = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const channelNumber = parseInt(req.params.channelNumber)
+        const payload: TokenPayload = res.locals.user;
+        const userId = payload.sub
+        const channelId = await getChannelByChannelNumber(channelNumber, userId)
+        res.status(200).json(channelId)
+    }
+    catch (err: any) {
+        next(err)
+    }
+}
+
 export default {
     getChannelsCall,
     addChannelCall,
@@ -154,5 +169,6 @@ export default {
     clearChannelScheduleCall,
     getCurrentVideoCall,
     getScheduleSummaryCall,
-    getChannelCall
+    getChannelCall,
+    getChannelByChannelNumberCall
 }

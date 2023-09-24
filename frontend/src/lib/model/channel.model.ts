@@ -4,4 +4,5 @@ export type Channel = {
     thumbnail: string
     description: string
     channelNumber: number
+    userId?: string
 }
