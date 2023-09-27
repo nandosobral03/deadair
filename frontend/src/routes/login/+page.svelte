@@ -39,7 +39,7 @@
 
 <div
 	class="w-full h-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden items-center justify-center
-	bg-gradient-to-br to-amber-200 from-primary relative
+	bg-gradient-to-br to-red-200 from-primary relative
 	"
 >
 	<div class="flex justify-center items-center absolute top-12 right-12">

@@ -22,15 +22,21 @@
 	"
 	style={expanded ? 'width: 12rem;' : 'width: 4rem;'}
 >
-	<button class="text-gray-200 hoverable" on:click={() => (expanded = !expanded)}>
-		<Icon icon={expanded ? 'segment' : 'menu'} />
-	</button>
+	<div class="flex w-full items-center justify-center gap-6">
+		{#if expanded}
+			<img src="/favicon.png" alt="Logo" class="w-16" />
+		{/if}
+		<button class="text-gray-200 hoverable" on:click={() => (expanded = !expanded)}>
+			<Icon icon={expanded ? 'segment' : 'menu'} />
+		</button>
+	</div>
 
 	<section class="flex flex-col gap-4">
 		{#each routes.filter((route) => !route.condition || route.condition()) as route}
 			<a
 				class="flex items-center p-2 hover:bg-gray-700 cursor-pointer rounded-md transition-all duration-200 ease-in-out"
 				class:bg-primary-dim={$page.url.pathname === `${route.path}`}
+				class:text-gray-800={$page.url.pathname === `${route.path}`}
 				class:px-auto={!expanded}
 				href={route.path}
 			>

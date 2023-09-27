@@ -5,14 +5,16 @@
 	import dayjs from 'dayjs';
 	import duration from 'dayjs/plugin/duration';
 	import Icon from './Icon.svelte';
+	import { tokenStore } from '$lib/stores/token.store';
+	import type { Channel } from '$lib/model/channel.model';
 	dayjs.extend(duration);
-	export let channel = '';
+	export let channel: Channel;
 
-	$: videos = $videoStore.get(channel) || [];
+	$: videos = $videoStore.get(channel.id) || [];
 	const handleError = (ev: any) => (ev.target.src = '/placeholder.svg');
 
 	const handleRemoveVideo = (id: string) => {
-		removeVideoFromChannel(channel, id);
+		removeVideoFromChannel(channel.id, id, $tokenStore!, channel.userId ? 'user' : 'public');
 	};
 </script>
 
@@ -32,15 +34,15 @@
 					/>
 				{/if}
 			</div>
-			<span class="text-gray-200 z-10 h-8 text-md overflow-hidden w-full text-left px-4">
+			<span class="text-gray-900 z-10 h-8 text-md overflow-hidden w-full text-left px-4">
 				{video.title}
 				<Divider color="gray-800" class="my-1" />
 				<div class="flex flex-col gap-px justify-around flex-grow relative">
-					<span class="text-gray-200 text-xs">By: {video.youtubeChannel} </span>
-					<span class="text-gray-200 text-xs">
+					<span class="text-gray-800 text-xs">By: {video.youtubeChannel} </span>
+					<span class="text-gray-800 text-xs">
 						Duration: {dayjs.duration(video.duration, 'seconds').format('HH:mm:ss')}
 					</span>
-					<span class="text-gray-200 text-xs mt-2">
+					<span class="text-gray-800 text-xs mt-2">
 						{video.category}
 					</span>
 					<button class="absolute -bottom-8 right-0" on:click={() => handleRemoveVideo(video.id)}>

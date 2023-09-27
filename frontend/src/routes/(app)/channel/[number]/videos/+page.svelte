@@ -29,7 +29,7 @@
 			loadingStore.setLoading(true);
 			loadingStore.setMessage('Adding video to channel');
 			await addVideoToChannel(
-				$page.params.channelId,
+				data.channel.id,
 				id,
 				data.token!,
 				data.channel.userId ? 'user' : 'public'
@@ -68,4 +68,4 @@
 		<Icon icon="add" className="text-white text-2xl" />
 	</button>
 </div>
-<VideoGrid channel={data.channel.id} />
+<VideoGrid channel={data.channel} />

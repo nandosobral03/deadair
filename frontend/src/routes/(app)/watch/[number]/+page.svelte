@@ -71,6 +71,14 @@
 			: '';
 </script>
 
+<svelte:head>
+	<title
+		>DA: {data.channel.name} - {schedule.length > 0
+			? schedule[0].title
+			: 'No videos scheduled'}</title
+	>
+</svelte:head>
+
 {#if shown}
 	<iframe
 		src={currentVideoUrl}

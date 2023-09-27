@@ -39,7 +39,7 @@
 		</div>
 		{#if allowWatch}
 			<a
-				class="flex items-center justify-center bg-primary rounded-md w-48 h-12 text-white"
+				class="flex items-center justify-center bg-primary rounded-md w-48 h-12 text-gray-800"
 				href="/watch/{channel.channelNumber}"
 			>
 				Watch Now

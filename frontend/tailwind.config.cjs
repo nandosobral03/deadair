@@ -5,9 +5,10 @@ const config = {
 	theme: {
 		extend: {
 			colors: {
-				primary: "#d31723",
-				"primary-hover": "#E93541",
-				"primary-dim": "#DC1826",
+				primary: "#fead89",
+				"primary-hover": "#f9a36b",
+				"primary-dim": "#fead89",
+				background: "#1D1D26",
 			},
 			width: {
 				"1/8": "12.5%",
@@ -17,7 +18,6 @@ const config = {
 				"5/8": "62.5%",
 				"6/8": "75%",
 				"7/8": "87.5%",
-
 			},
 			minHeight: {
 				"px": "1px"

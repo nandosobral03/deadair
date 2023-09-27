@@ -103,7 +103,7 @@
 		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-2 relative px-4 overflow-x-hidden"
 	>
 		<button
-			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-white"
+			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800"
 			on:click={() => {
 				handleSave(schedule);
 			}}
@@ -159,8 +159,8 @@
 	<Divider vertical class="bg-primary" />
 	<div class="flex flex-col w-1/4 gap-2 mx-4 overflow-y-scroll">
 		<a
-			href="/channel/{$page.params.channelId}/videos"
-			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-white text-center
+			href="/channel/{channel.channelNumber}/videos"
+			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center
 
 		">Manage videos</a
 		>

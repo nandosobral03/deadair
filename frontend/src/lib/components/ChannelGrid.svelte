@@ -46,10 +46,10 @@
 					/>
 				{/if}
 			</div>
-			<span class="text-gray-200 z-10 h-8 text-sm overflow-hidden w-full text-left px-4">
+			<span class="text-gray-800 z-10 h-8 text-sm overflow-hidden w-full text-left px-4">
 				{channel.name}
 				<Divider />
-				<span class="text-gray-200 text-xs">{channel.description} </span>
+				<span class="text-gray-800 text-xs">{channel.description} </span>
 			</span>
 		</button>
 	{/each}
@@ -60,7 +60,7 @@
 	hoverable"
 		>
 			<div>
-				<Icon icon="add" className="text-white text-8xl" />
+				<Icon icon="add" className="text-gray-800 text-8xl" />
 			</div>
 		</button>
 	{/if}

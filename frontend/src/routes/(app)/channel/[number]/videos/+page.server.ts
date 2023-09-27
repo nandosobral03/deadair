@@ -4,16 +4,16 @@ import type { Channel } from "$lib/model/channel.model"
 import type { Video } from "$lib/model/video.model"
 import axios from "axios"
 export const load = async ({ params, cookies }) => {
-    const { channelId } = params
+    const { number } = params
     const token = cookies.get('token');
-    const channel = await axios.get(`${API_URL}/channels/${channelId}`, {
+    const channel = await axios.get(`${API_URL}/channels/station/${number}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     })
     const videos = await axios.get(`${API_URL}/videos`, {
         params: {
-            channelId,
+            channel: channel.data.id,
         },
         headers: {
             Authorization: `Bearer ${token}`,

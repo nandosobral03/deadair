@@ -19,11 +19,6 @@
 			icon: 'browse'
 		},
 		{
-			name: 'About',
-			path: '/about',
-			icon: 'info'
-		},
-		{
 			name: 'Channels',
 			path: '/channels',
 			icon: 'display_settings',
@@ -39,9 +34,12 @@
 	tokenStore.set(data.token);
 </script>
 
+<svelte:head>
+	<title>Dead Air</title>
+</svelte:head>
 <div class="w-full h-full flex bg-transparent relative">
 	<Sidebar {routes} />
-	<div class="h-full w-full flex flex-col p-4 gap-4 bg-gray-900 relative overflow-y-auto">
+	<div class="h-full w-full flex flex-col p-4 gap-4 bg-background relative overflow-y-auto">
 		<slot />
 	</div>
 	<Modal />
