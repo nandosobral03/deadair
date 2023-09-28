@@ -61,7 +61,6 @@
 	"
 >
 	<div class="w-5/6 flex flex-col gap-12 max-w-7xl my-4 h-min">
-		<h3 class="text-3xl font-semibold text-white text-center" id="about">About Dead Air</h3>
 		<Divider color="white" />
 		<div class="text-white text-justify bg-gray-900 p-8 straight-shadow">
 			Dear Air is your Gateway to Curated YouTube Broadcasts Welcome to Dead Air, your digital oasis

@@ -7,6 +7,7 @@ export interface DeadAirDb {
     schedule_item: ScheduleItemsTable;
     user: UsersTable;
     image: ImageTable;
+    sharedChannel: SharedChannelTable;
 }
 
 
@@ -71,3 +72,10 @@ export interface UsersTable {
 
 export type User = Selectable<UsersTable>;
 export type UserInsert = Insertable<User>;
+
+
+export interface SharedChannelTable {
+    channelId: string;
+    userId: string;
+    createdAt: number;
+}

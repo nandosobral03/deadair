@@ -30,13 +30,18 @@
 {/if}
 
 <style lang="scss">
+	.xs {
+		height: clamp(16rem, 20%, 20rem);
+		width: 30rem;
+	}
+
 	.sm {
-		height: clamp(20rem, 70%, 22rem);
+		height: clamp(24rem, 35%, 26rem);
 		width: 30rem;
 	}
 
 	.md {
-		height: clamp(24rem, 70%, 32rem);
+		height: clamp(24rem, 50%, 32rem);
 		width: 40rem;
 	}
 

@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express"
 import { clearChannelSchedule, deleteChannel, getChannel, getChannelByChannelNumber, getChannelSchedule, getChannels, getCurrentVideo, getScheduleSummary, insertChannel, putChannelSchedule, updateChannel } from "../services/channel.service"
 import { isCreateChannel, isCreateSchedule } from "../models/channel.model"
+
 import { TokenPayload } from "../middleware/jwt.middleware";
 
 const getChannelsCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload?.sub
         const channels = await getChannels(userId)
         res.status(200).json(channels)
@@ -17,7 +18,7 @@ const getChannelsCall = async (req: Request, res: Response, next: NextFunction) 
 
 const getChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         console.log(payload);
         const userId = payload?.sub
         const id = req.params.id
@@ -35,7 +36,7 @@ const addChannelCall = async (req: Request, res: Response, next: NextFunction) =
             res.status(400).json({ message: 'Invalid channel' })
             return
         }
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const channel = req.body
         const newChannel = await insertChannel(channel, userId)
@@ -47,11 +48,11 @@ const addChannelCall = async (req: Request, res: Response, next: NextFunction) =
 
 const deleteChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const id = req.params.id
         await deleteChannel(id, userId)
-
+        res.status(200).json({ message: 'Channel deleted' })
     }
     catch (err: any) {
         next(err)
@@ -64,7 +65,7 @@ const updateChannelCall = async (req: Request, res: Response, next: NextFunction
             res.status(400).json({ message: 'Invalid channel' })
             return
         }
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const id = req.params.id
         const channel = req.body
@@ -78,7 +79,7 @@ const updateChannelCall = async (req: Request, res: Response, next: NextFunction
 const getChannelScheduleCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelId = req.params.channelId
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload?.sub
         const schedule = await getChannelSchedule(channelId, userId)
         res.status(200).json(schedule)
@@ -91,7 +92,7 @@ const getChannelScheduleCall = async (req: Request, res: Response, next: NextFun
 const putChannelScheduleCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelId = req.params.channelId
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const schedule = req.body
         if (!isCreateSchedule(schedule)) {
@@ -108,7 +109,7 @@ const putChannelScheduleCall = async (req: Request, res: Response, next: NextFun
 const clearChannelScheduleCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelId = req.params.channelId
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
 
         await clearChannelSchedule(channelId, userId)
@@ -122,7 +123,7 @@ const clearChannelScheduleCall = async (req: Request, res: Response, next: NextF
 const getCurrentVideoCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelId = req.params.channelId
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const video = await getCurrentVideo(channelId, userId)
         res.status(200).json(video)
@@ -136,7 +137,7 @@ const getCurrentVideoCall = async (req: Request, res: Response, next: NextFuncti
 const getScheduleSummaryCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelId = req.params.channelId
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const summary = await getScheduleSummary(channelId, userId)
         res.status(200).json(summary)
@@ -149,7 +150,7 @@ const getScheduleSummaryCall = async (req: Request, res: Response, next: NextFun
 const getChannelByChannelNumberCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const channelNumber = parseInt(req.params.channelNumber)
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         const channelId = await getChannelByChannelNumber(channelNumber, userId)
         res.status(200).json(channelId)

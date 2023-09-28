@@ -11,6 +11,32 @@ const checkIfChannelNumberExists = async (channelNumber: number, userId?: string
 }
 
 
+export const userCanSeeChannel = async (channelId: string, userId?: string) => {
+    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
+    if (!channel) throw { status: 404, message: 'Channel not found' }
+    const channelIsPublic = channel.userId === undefined;
+    if (!userId) {
+        return channelIsPublic;
+    } else {
+        const userIsOwner = channel.userId === userId;
+        const userIsShared = await db.selectFrom('sharedChannel').select(['userId']).where("channelId", "=", channelId).where("userId", "=", userId).executeTakeFirst();
+        return channelIsPublic || userIsOwner || userIsShared;
+    }
+}
+
+export const channelIsPublicOrUserIsOwner = async (channelId: string, userId?: string) => {
+    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
+    if (!channel) throw { status: 404, message: 'Channel not found' }
+    const channelIsPublic = channel.userId === undefined;
+    if (!userId) {
+        return channelIsPublic;
+    } else {
+        const userIsOwner = channel.userId === userId;
+        return channelIsPublic || userIsOwner;
+    }
+}
+
+
 export const insertChannel = async (channel: CreateChannel, userId?: string) => {
     await checkIfChannelNumberExists(channel.channelNumber, userId);
     let insert: ChannelInsert = {
@@ -33,34 +59,42 @@ export const insertChannel = async (channel: CreateChannel, userId?: string) => 
 }
 
 export const getChannels = async (userId: string | undefined) => {
-    let userChannels: any[] = [];
+    let userChannels: { id: string, name: string, thumbnail: string, description: string, channelNumber: number }[] = [];
+    let sharedChannels: { id: string, name: string, thumbnail: string, description: string, channelNumber: number }[] = [];
     if (userId) {
         userChannels = await db.selectFrom('channel')
             .select(['id', 'name', 'thumbnail', 'description', 'channelNumber'])
             .where("userId", "=", userId).execute();
+
+        sharedChannels = await db.selectFrom('channel')
+            .select(['channel.id', 'channel.name', 'channel.thumbnail', 'channel.description', 'channel.channelNumber'])
+            .leftJoin('sharedChannel', 'channel.id', 'sharedChannel.channelId')
+            .where("sharedChannel.userId", "=", userId).execute();
+
     }
 
     const publicChannels = await db.selectFrom('channel')
         .select(['id', 'name', 'thumbnail', 'description', 'channelNumber'])
         .where("userId", "is", undefined).execute();
 
+
+
     return {
         userChannels,
-        publicChannels
+        publicChannels,
+        sharedChannels,
     };
 }
 
 
 export const getChannel = async (id: string, userId?: string) => {
-    console.log(id, userId);
     const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", id).executeTakeFirst();
-    console.log(channel);
     if (!channel) throw {
         status: 404,
         message: 'Channel not found'
     }
-    if (channel.userId != undefined && channel.userId != userId) throw { status: 404, message: 'Channel not found' }
-    return channel;
+    if (await userCanSeeChannel(id, userId)) return channel;
+    else throw { status: 401, message: 'Unauthorized' }
 }
 
 
@@ -74,6 +108,8 @@ export const deleteChannel = async (id: string, userId?: string) => {
 
 export const updateChannel = async (id: string, channel: CreateChannel, userId?: string) => {
     let channelInfo = await getChannel(id, userId);
+    if (channelInfo.userId && channelInfo.userId != userId) throw { status: 401, message: 'Unauthorized' }
+
     let update: ChannelUpdate = {
         id: id,
         ...channel
@@ -101,27 +137,20 @@ export const updateChannel = async (id: string, channel: CreateChannel, userId?:
 
 
 export const getChannelSchedule = async (channelId: string, userId?: string) => {
-    let channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
-    if (!channel) throw { status: 404, message: 'Channel not found' }
-    if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
-
-
+    if (! await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
     const schedule = await db.selectFrom('schedule_item').select(['channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId).rightJoin('video', 'schedule_item.videoId', 'video.id').select(['video.title', 'video.thumbnail', 'video.duration', 'video.category']).execute();
     return schedule;
 }
 
 export const clearChannelSchedule = async (channelId: string, userId?: string) => {
     let channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
-    if (!channel) throw { status: 404, message: 'Channel not found' }
-    if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
+    if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
 
     await db.deleteFrom('schedule_item').where("channelId", "=", channelId).execute();
 }
 
 export const putChannelSchedule = async (channelId: string, schedule: CreateSchedule, userId?: string) => {
-    let channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
-    if (!channel) throw { status: 404, message: 'Channel not found' }
-    if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
+    if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
 
     await clearChannelSchedule(channelId, userId);
 
@@ -140,9 +169,7 @@ export const putChannelSchedule = async (channelId: string, schedule: CreateSche
 }
 
 export const getCurrentVideo = async (channelId: string, userId?: string) => {
-    let channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
-    if (!channel) throw { status: 404, message: 'Channel not found' }
-    if (channel.userId != undefined && channel.userId != userId) throw { status: 401, message: 'Unauthorized' }
+    if (! await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
     const now = timeSinceWeekStart();
     const schedule = await db.selectFrom('schedule_item').select(['id', 'channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId)
         .where("startTime", "<=", now).where("endTime", ">=", now).executeTakeFirst();
@@ -157,6 +184,7 @@ export const getCurrentVideo = async (channelId: string, userId?: string) => {
 }
 
 export const getScheduleSummary = async (channelId: string, userId?: string) => {
+    if (! await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
     const schedule = await getChannelSchedule(channelId, userId);
     const now = timeSinceWeekStart();
     for (let i = 0; i < schedule.length; i++) {

@@ -37,7 +37,7 @@ export const jwtMiddleware = (req: Request, res: Response, next: NextFunction) =
             throw { status: 401, message: 'Invalid token' };
         }
 
-        res.locals.user = payload;
+        res.locals.payload = payload;
 
         next();
     } catch (error) {
@@ -69,7 +69,7 @@ export const jwtMiddlewareOptional = (req: Request, res: Response, next: NextFun
             next();
             return;
         }
-        res.locals.user = payload;
+        res.locals.payload = payload;
 
         next();
     } catch (error) {

@@ -1,6 +1,7 @@
 import { YoutubeAPI, durationToSeconds, getCategoryName } from '../utils/youtube';
 import { db } from '../database/db';
 import { VideoInsert } from '../database/types';
+import { channelIsPublicOrUserIsOwner, userCanSeeChannel } from './channel.service';
 
 export const createVideo = async (videoId: string) => {
     const videoInfo = await YoutubeAPI.videos.list({ id: [videoId], part: ['snippet', 'contentDetails', 'statistics'] });
@@ -51,7 +52,8 @@ export const getVideo = async (id: string) => {
 
 
 export const addVideoToChannel = async (id: string, channelId: string, userId?: string) => {
-    console.log(id, channelId, userId);
+    if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
+
     const storedVideo = await db.selectFrom('video').select(['id']).where("id", "=", id).executeTakeFirst();
     if (!storedVideo) {
         await createVideo(id);
@@ -77,6 +79,11 @@ export const addVideoToChannel = async (id: string, channelId: string, userId?: 
 
 
 export const removeVideoFromChannel = async (id: string, channelId: string, userId?: string) => {
+
+    const channelSchedule = await db.selectFrom('schedule_item').select(['channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId).where("videoId", "=", id).execute();
+    if (channelSchedule.length > 0) throw { status: 409, message: 'Video is scheduled, remove from schedule first' };
+
+
     if (userId) {
         const videoId = await db.deleteFrom('videoChannel').where("videoId", "=", id).where("channelId", "=", channelId).where("userId", "=", userId).returning("videoId").executeTakeFirst();
         return videoId;
@@ -89,10 +96,7 @@ export const removeVideoFromChannel = async (id: string, channelId: string, user
 
 export const getVideos = async ({ channelId, userId }: { channelId?: string, userId?: string }) => {
     if (channelId) {
-        let channel = await db.selectFrom('channel').select(['id', 'userId']).where("id", "=", channelId).executeTakeFirst();
-        if (!channel) throw { status: 404, message: 'Channel not found' };
-        if (channel.userId && !userId || channel.userId && userId && channel.userId !== userId) throw { status: 403, message: 'Forbidden' };
-
+        if (!await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
         const videos = await db.selectFrom("video").select(['id', 'title', 'thumbnail', 'duration', 'category', 'youtubeChannel']).where("id", "in", db.selectFrom('videoChannel').select(['videoId']).where("channelId", "=", channelId)).execute();
         return videos;
     } else {

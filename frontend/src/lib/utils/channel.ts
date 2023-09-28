@@ -1,7 +1,7 @@
-import { PUBLIC_API_URL } from "$env/static/public";
 import type { Channel } from "$lib/model/channel.model";
-import { loadingStore } from "$lib/stores/loading.store";
+import { PUBLIC_API_URL } from "$env/static/public";
 import axios from "axios";
+import { loadingStore } from "$lib/stores/loading.store";
 import { writable } from "svelte/store";
 
 export const createChannelAPI = async (name: string, description: string, channelNumber: number, token: string, type: 'public' | 'user') => {
@@ -54,12 +54,43 @@ export const updateChannelAPI = async (id: string, name: string, description: st
 }
 
 
+export const deleteChannelAPI = async (id: string, token: string, type: 'public' | 'user') => {
+    loadingStore.setMessage('Deleting channel...');
+    const url = type === 'public' ? `${PUBLIC_API_URL}/admin/channel/${id}` : `${PUBLIC_API_URL}/channels/${id}`;
+    const data = await axios.delete(url, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (type === 'public') {
+        channelStore.update((all) => ({ ...all, publicChannels: all.publicChannels.filter((channel) => channel.id !== id) }));
+    } else {
+        channelStore.update((all) => ({ ...all, userChannels: all.userChannels.filter((channel) => channel.id !== id) }));
+    }
+}
+
+
+export const joinChannelAPI = async (id: string, token: string) => {
+    loadingStore.setMessage('Joining channel...');
+    const url = `${PUBLIC_API_URL}/shared/${id}`;
+    const data = await axios.post(url, {}, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return data;
+}
+
+
+
 export const channelStore = writable<{
     publicChannels: Channel[],
-    userChannels: Channel[]
+    userChannels: Channel[],
+    sharedChannels: Channel[]
 }>(
     {
         publicChannels: [],
-        userChannels: []
+        userChannels: [],
+        sharedChannels: []
     }
 );

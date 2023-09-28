@@ -12,9 +12,10 @@ export const load = async ({ params, cookies }) => {
             Authorization: `Bearer ${token}`,
         },
     })
+    console.log(channel.data)
     const videos = await axios.get(`${API_URL}/videos`, {
         params: {
-            channel: channel.data.id,
+            channelId: channel.data.id,
         },
         headers: {
             Authorization: `Bearer ${token}`,

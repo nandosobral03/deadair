@@ -18,7 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn('thumbnail', 'text', (col) => col.notNull())
         .addColumn('description', 'text', (col) => col.notNull())
         .addColumn('channelNumber', 'integer', (col) => col.notNull())
-        .addColumn('userId', 'text', (col) => col.references('user.id'))
+        .addColumn('userId', 'text', (col) => col.references('user.id').onDelete('cascade'))
         .addColumn('createdAt', 'text', (col) =>
             col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
         )
@@ -37,15 +37,15 @@ export async function up(db: Kysely<any>): Promise<void> {
     await db.schema
         .createTable('videoChannel')
         .addColumn('videoId', 'text', (col) => col.references('video.id'))
-        .addColumn('channelId', 'text', (col) => col.references('channel.id'))
-        .addColumn('userId', 'text', (col) => col.references('user.id'))
+        .addColumn('channelId', 'text', (col) => col.references('channel.id').onDelete('cascade'))
+        .addColumn('userId', 'text', (col) => col.references('user.id').onDelete('cascade'))
         .execute()
 
 
     await db.schema
         .createTable('schedule_item')
         .addColumn('id', 'text', (col) => col.notNull().primaryKey())
-        .addColumn('channelId', 'text', (col) => col.references('channel.id'))
+        .addColumn('channelId', 'text', (col) => col.references('channel.id').onDelete('cascade'))
         .addColumn('videoId', 'text', (col) => col.references('video.id'))
         .addColumn('startTime', 'integer', (col) => col.notNull())
         .addColumn('endTime', 'integer', (col) => col.notNull())

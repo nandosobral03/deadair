@@ -5,13 +5,12 @@
 	import { toastStore } from '$lib/stores/toast.store';
 	import { addVideoToChannel, videoStore } from '$lib/utils/video';
 	import type { PageServerData } from './$types';
-	import { page } from '$app/stores';
 	import { parseHTTPError } from '$lib/utils/error';
 	import { loadingStore } from '$lib/stores/loading.store';
 	export let data: PageServerData;
 	let videoUrl: string = '';
 	videoStore.update((store) => {
-		return store.set($page.params.channelId, data.videos);
+		return store.set(data.channel.id, data.videos);
 	});
 	const addVideo = async () => {
 		let id = '';
@@ -52,12 +51,12 @@
 </script>
 
 <ChannelHeader channel={data.channel} />
-<div class="flex gap-2 p-4 bg-gray-900 w-full">
+<div class="flex gap-2 p-4 w-full">
 	<input
 		bind:value={videoUrl}
 		type="text"
 		placeholder="https://www.youtube.com/watch?v=..."
-		class="w-full h-12 px-4 bg-gray-800 text-gray-200
+		class="w-full h-12 px-4 bg-gray-950 text-gray-200
             straight-shadow
         "
 	/>

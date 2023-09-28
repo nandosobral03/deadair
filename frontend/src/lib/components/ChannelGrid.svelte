@@ -16,7 +16,7 @@
 			props: {
 				type: type == 'userChannels' ? 'user' : 'public'
 			},
-			size: 'md'
+			size: 'lg'
 		});
 	};
 
@@ -24,7 +24,11 @@
 		if (allowCreate) {
 			window.location.href = `/channel/${channel.channelNumber}`;
 		} else {
-			window.location.href = `/browse/${channel.channelNumber}`;
+			if (type == 'sharedChannels') {
+				window.location.href = `/browse/shared/${channel.id}`;
+			} else {
+				window.location.href = `/browse/${channel.channelNumber}`;
+			}
 		}
 	};
 </script>

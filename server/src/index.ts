@@ -1,13 +1,15 @@
-import express from "express";
+import adminRoutes from "./routes/admin.routes";
+import channelRoutes from "./routes/channel.routes";
 import cors from "cors";
 import { errorMiddleware } from "./middleware/error.middleware";
-import videoRoutes from "./routes/video.routes";
-import channelRoutes from "./routes/channel.routes";
-import scheduleRoutes from "./routes/schedule.routes";
-import adminRoutes from "./routes/admin.routes";
-import utilRoutes from "./routes/util.routes";
-import userRoutes from "./routes/user.routes";
+import express from "express";
 import { jwtMiddleware } from "./middleware/jwt.middleware";
+import scheduleRoutes from "./routes/schedule.routes";
+import sharedRoutes from "./routes/shared.routes";
+import userRoutes from "./routes/user.routes";
+import utilRoutes from "./routes/util.routes";
+import videoRoutes from "./routes/video.routes";
+
 const dotenv = require("dotenv");
 
 const app = express();
@@ -21,6 +23,7 @@ app.use("/api/channels", channelRoutes, errorMiddleware)
 app.use("/api/schedule", scheduleRoutes, errorMiddleware)
 app.use("/api/admin", adminRoutes, errorMiddleware)
 app.use("/api/utils", utilRoutes, errorMiddleware)
+app.use("/api/shared", sharedRoutes, errorMiddleware)
 app.use("/api", userRoutes, errorMiddleware)
 app.listen(port, () => {
     console.log(`Dead Air is live at  :${port}`);

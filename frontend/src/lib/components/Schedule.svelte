@@ -115,7 +115,7 @@
 				<p>No schedule items yet! Add one by dragging a video from the sidebar.</p>
 			</div>
 			<div
-				class="flex flex-row h-full rounded-md absolute z-30 w-full"
+				class="flex flex-row h-full rounded-md absolute z-10 w-full"
 				use:dropzone={{
 					on_dropzone: handleDrop(-1)
 				}}
@@ -150,7 +150,7 @@
 			</div>
 		{/each}
 		<div
-			class="flex flex-row flex-grow bg-gray-900 rounded-md"
+			class="flex flex-row flex-grow rounded-md"
 			use:dropzone={{
 				on_dropzone: handleDrop(schedule.length - 1)
 			}}

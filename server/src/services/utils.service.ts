@@ -7,7 +7,7 @@ import { TokenPayload } from '../middleware/jwt.middleware';
 export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.headers["x-api-key"] !== process.env.API_KEY) {
-            const payload: TokenPayload = res.locals.user;
+            const payload: TokenPayload = res.locals.payload;
             const userId = payload?.sub;
             console.log(payload);
             if (!userId) {

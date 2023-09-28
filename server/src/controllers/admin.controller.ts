@@ -12,7 +12,7 @@ import { TokenPayload } from "../middleware/jwt.middleware";
 
 const createPublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateChannel(req.body)) {
             res.status(400).send("Bad Request");
@@ -28,7 +28,7 @@ const createPublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const updatePublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateChannel(req.body)) {
             res.status(400).send("Bad Request");
@@ -46,7 +46,7 @@ const updatePublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const deletePublicChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const id = req.params.channelId;
         await deleteChannel(id);
@@ -63,7 +63,7 @@ const deletePublicChannelCall = async (req: Request, res: Response, next: NextFu
 
 const putPublicChannelScheduleCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         if (!isCreateSchedule(req.body)) {
             res.status(400).send("Bad Request");
@@ -81,7 +81,7 @@ const putPublicChannelScheduleCall = async (req: Request, res: Response, next: N
 
 const addVideoToChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const { videoId, channelId } = req.params;
         await addVideoToChannel(videoId, channelId);
@@ -96,7 +96,7 @@ const addVideoToChannelCall = async (req: Request, res: Response, next: NextFunc
 
 const removeVideoFromChannelCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
         const { videoId, channelId } = req.params;
         await removeVideoFromChannel(videoId, channelId);

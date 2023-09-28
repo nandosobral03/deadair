@@ -1,6 +1,6 @@
 import { isCreateVideoModel } from "../models/video.model"
 import { Request, Response } from "express";
-import { createVideo, getVideos, getVideo, addVideoToChannel } from "../services/video.service";
+import { createVideo, getVideos, getVideo, addVideoToChannel, removeVideoFromChannel } from "../services/video.service";
 import { TokenPayload } from "../middleware/jwt.middleware";
 
 const addVideoCall = async (req: Request, res: Response, next: any) => {
@@ -25,7 +25,7 @@ const addVideoCall = async (req: Request, res: Response, next: any) => {
 const getVideosCall = async (req: Request, res: Response, next: any) => {
     try {
         let { channelId } = req.query as { channelId: string | undefined };
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         console.log(payload);
         const userId = payload.sub
         const videos = await getVideos({ channelId, userId });
@@ -50,7 +50,7 @@ const getVideoCall = async (req: Request, res: Response, next: any) => {
 const addVideoToChannelCall = async (req: Request, res: Response, next: any) => {
     try {
         const { id, channelId } = req.params;
-        const payload: TokenPayload = res.locals.user;
+        const payload: TokenPayload = res.locals.payload;
         const userId = payload.sub
         await addVideoToChannel(id, channelId, userId);
         res.status(200).send();
@@ -60,5 +60,18 @@ const addVideoToChannelCall = async (req: Request, res: Response, next: any) => 
     }
 }
 
+const removeVideoFromChannelCall = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id, channelId } = req.params;
+        const payload: TokenPayload = res.locals.payload;
+        const userId = payload.sub
+        await removeVideoFromChannel(id, channelId, userId);
+        res.status(200).send();
+    }
+    catch (err: any) {
+        next(err);
+    }
+}
 
-export default { addVideoCall, getVideosCall, getVideoCall, addVideoToChannelCall };
+
+export default { addVideoCall, getVideosCall, getVideoCall, addVideoToChannelCall, removeVideoFromChannelCall }
