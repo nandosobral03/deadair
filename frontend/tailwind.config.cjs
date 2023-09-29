@@ -22,6 +22,9 @@ const config = {
 			},
 			minHeight: {
 				"px": "1px"
+			},
+			height: {
+				"9/10": "90%",
 			}
 		},
 

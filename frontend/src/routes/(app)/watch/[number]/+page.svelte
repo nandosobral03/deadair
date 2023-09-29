@@ -98,7 +98,7 @@
 	/>
 {/if}
 {#if upcomingVideo}
-	<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-4">
+	<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
 		<div class="bg-gray-950 bg-opacity-80 rounded-lg p-4 flex gap-4">
 			<img src={upcomingVideo.thumbnail} class="w-32 h-24 rounded-lg" alt="" />
 			<div class="flex flex-col gap-1 flex-grow">

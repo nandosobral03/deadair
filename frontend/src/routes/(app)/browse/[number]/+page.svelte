@@ -5,15 +5,10 @@
 	import type { PageServerData } from './$types';
 
 	export let data: PageServerData & LayoutServerData;
-	let payload = data.payload!;
+	let payload = data.payload;
 </script>
 
-<ChannelHeader
-	channel={data.channel}
-	allowWatch
-	userId={payload.sub}
-	allowEdit={data.channel.userId == payload.sub}
-/>
+<ChannelHeader channel={data.channel} allowWatch userId={payload?.sub} allowEdit={false} />
 {#if data.schedule.length > 0}
 	<ChannelSchedule originalSchedule={data.schedule} />
 {/if}

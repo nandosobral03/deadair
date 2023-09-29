@@ -152,7 +152,7 @@
 				<p>No schedule items yet! Add one by dragging a video from the sidebar.</p>
 			</div>
 			<div
-				class="flex flex-row h-full rounded-md absolute z-10 w-full"
+				class="flex flex-row h-9/10 rounded-md absolute z-10 w-full bottom-0"
 				use:dropzone={{
 					on_dropzone: handleDrop(-1)
 				}}
@@ -167,14 +167,14 @@
 				})}
 			>
 				<div
-					class="w-full h-1/3 absolute top-0 left-0 top-drop z-10"
+					class="w-full h-2/5 absolute top-0 left-0 top-drop z-10"
 					use:dropzone={{
 						on_dropzone: handleDrop(index - 1)
 					}}
 				/>
 
 				<div
-					class="w-full h-1/3 absolute bottom-0 left-0 bottom-drop z-10"
+					class="w-full h-2/5 absolute bottom-0 left-0 bottom-drop z-10"
 					use:dropzone={{
 						on_dropzone: handleDrop(index)
 					}}
@@ -248,12 +248,12 @@
 	div:global(.droppable) {
 		&.top-drop {
 			top: -0.25rem;
-			border-top: 0.25rem solid red;
+			border-top: 0.25rem solid var(--primary);
 		}
 
 		&.bottom-drop {
 			bottom: -0.25rem;
-			border-bottom: 0.25rem solid red;
+			border-bottom: 0.25rem solid var(--primary);
 		}
 
 		* {

@@ -151,7 +151,7 @@ const getChannelByChannelNumberCall = async (req: Request, res: Response, next: 
     try {
         const channelNumber = parseInt(req.params.channelNumber)
         const payload: TokenPayload = res.locals.payload;
-        const userId = payload.sub
+        const userId = payload?.sub
         const channelId = await getChannelByChannelNumber(channelNumber, userId)
         res.status(200).json(channelId)
     }

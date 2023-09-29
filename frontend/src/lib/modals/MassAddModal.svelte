@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingStore } from '$lib/stores/loading.store';
+	import { modalStore } from '$lib/stores/modal.store';
 	import { toastStore } from '$lib/stores/toast.store';
 	import { parseHTTPError } from '$lib/utils/error';
 	import { addVideoToChannel } from '$lib/utils/video';
@@ -45,11 +46,12 @@
 
 		toastStore.addToast({
 			title: 'Success',
-			text: `Added ${videosInTens.length * 10 - failed} videos to channel`,
+			text: `Added ${videos.split('\n').filter((v) => v !== '').length - failed} videos`,
 			type: 'success'
 		});
 
 		loadingStore.setLoading(false);
+		modalStore.clear();
 	};
 </script>
 

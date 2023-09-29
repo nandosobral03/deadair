@@ -14,7 +14,7 @@ const checkIfChannelNumberExists = async (channelNumber: number, userId?: string
 export const userCanSeeChannel = async (channelId: string, userId?: string) => {
     const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
     if (!channel) throw { status: 404, message: 'Channel not found' }
-    const channelIsPublic = channel.userId === undefined;
+    const channelIsPublic = channel.userId === null;
     if (!userId) {
         return channelIsPublic;
     } else {
@@ -27,7 +27,7 @@ export const userCanSeeChannel = async (channelId: string, userId?: string) => {
 export const channelIsPublicOrUserIsOwner = async (channelId: string, userId?: string) => {
     const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
     if (!channel) throw { status: 404, message: 'Channel not found' }
-    const channelIsPublic = channel.userId === undefined;
+    const channelIsPublic = channel.userId === null;
     if (!userId) {
         return channelIsPublic;
     } else {
@@ -99,10 +99,10 @@ export const getChannel = async (id: string, userId?: string) => {
 
 
 export const deleteChannel = async (id: string, userId?: string) => {
-    const channel = await db.deleteFrom('channel').where("id", "=", id).where("userId", "=", userId).returning("id").execute();
-    if (channel.length === 0) throw {
-        status: 404,
-        message: 'Channel not found'
+    if (!userId) {
+        await db.deleteFrom('channel').where("id", "=", id).returning("id").execute();
+    } else {
+        await db.deleteFrom('channel').where("id", "=", id).where("userId", "=", userId).returning("id").execute();
     }
 }
 
@@ -153,7 +153,7 @@ export const putChannelSchedule = async (channelId: string, schedule: CreateSche
     if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
 
     await clearChannelSchedule(channelId, userId);
-
+    if (schedule.items.length == 0) return;
     let scheduleInsert: any[] = [];
     for (let i = 0; i < schedule.items.length; i++) {
         const item = schedule.items[i];

@@ -38,6 +38,7 @@
 				data.token!,
 				data.channel.userId ? 'user' : 'public'
 			);
+			videoUrl = '';
 			toastStore.addToast({
 				title: 'Success',
 				text: 'Video added to channel',
