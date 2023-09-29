@@ -12,12 +12,24 @@
 	import ScheduleVideo from './ScheduleVideo.svelte';
 	import Divider from './Divider.svelte';
 	import VideoPreview from './VideoPreview.svelte';
-	import { page } from '$app/stores';
 	import { putScheduleAPI } from '$lib/utils/schedule';
 	import { toastStore } from '$lib/stores/toast.store';
 	import type { Channel } from '$lib/model/channel.model';
 	import { tokenStore } from '$lib/stores/token.store';
 	import { parseHTTPError } from '$lib/utils/error';
+	import Toggle from './Toggle.svelte';
+	import Icon from './Icon.svelte';
+	let showScheduledVal: 'on' | 'off' = 'off';
+	$: showScheduled = showScheduledVal === 'on';
+	let shownVideos: Video[] = videos;
+	$: {
+		console.log(showScheduled);
+		if (!showScheduled) {
+			shownVideos = videos.filter((v) => !schedule.find((s) => s.videoId === v.id));
+		} else {
+			shownVideos = videos;
+		}
+	}
 
 	dayjs.extend(duration);
 	$: total = dayjs.duration(
@@ -26,6 +38,13 @@
 		}, 0),
 		's'
 	);
+
+	const randomizeSchedule = () => {
+		schedule = schedule.sort(() => Math.random() - 0.5);
+		for (let i = 0; i < schedule.length; i++) {
+			schedule[i].startTime = i === 0 ? 0 : schedule[i - 1].startTime + schedule[i - 1].duration;
+		}
+	};
 
 	const handleSave = async (schedule: ScheduleCreate[]) => {
 		let items: ScheduleCreateRequest[] = schedule.map((s) => {
@@ -102,13 +121,31 @@
 	<div
 		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-2 relative px-4 overflow-x-hidden"
 	>
-		<button
-			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800"
-			on:click={() => {
-				handleSave(schedule);
-			}}
-			>Save Schedule
-		</button>
+		<div class="w-full flex gap-4">
+			<button
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 flex-grow"
+				on:click={() => {
+					handleSave(schedule);
+				}}
+				>Save Schedule
+			</button>
+			<button
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 aspect-square grid place-items-center"
+				on:click={randomizeSchedule}
+			>
+				<Icon icon="casino" />
+			</button>
+
+			<button
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 aspect-square grid place-items-center"
+				on:click={() => {
+					schedule = [];
+				}}
+			>
+				<Icon icon="delete" />
+			</button>
+		</div>
+
 		{#if schedule.length == 0}
 			<div class="text-gray-200 h-full text-center flex flex-col justify-center items-center">
 				<img src="/empty.png" alt="Placeholder" class="w-1/2 mx-auto" />
@@ -123,21 +160,21 @@
 		{/if}
 		{#each schedule as item, index}
 			<div
-				class="flex flex-row p-2 bg-gray-950 rounded-md relative hover:bg-gray-800 mx-4"
+				class="flex flex-row p-2 bg-gray-950 rounded-md relative hover:bg-gray-800"
 				use:draggable={JSON.stringify({
 					...item,
 					id: item.videoId
 				})}
 			>
 				<div
-					class="w-full h-1/4 absolute top-0 left-0 top-drop"
+					class="w-full h-1/3 absolute top-0 left-0 top-drop z-10"
 					use:dropzone={{
 						on_dropzone: handleDrop(index - 1)
 					}}
 				/>
 
 				<div
-					class="w-full h-1/4 absolute bottom-0 left-0 bottom-drop"
+					class="w-full h-1/3 absolute bottom-0 left-0 bottom-drop z-10"
 					use:dropzone={{
 						on_dropzone: handleDrop(index)
 					}}
@@ -157,19 +194,53 @@
 		/>
 	</div>
 	<Divider vertical class="bg-primary" />
-	<div class="flex flex-col w-1/4 gap-2 mx-4 overflow-y-scroll">
-		<a
-			href="/channel/{channel.channelNumber}/videos"
-			class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center
+	<div class="flex flex-col w-1/4 gap-2 mx-4">
+		<div class="flex w-full gap-4">
+			<button
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center grid place-items-center"
+				on:click={() => {
+					const toAdd = videos.map((v) => {
+						return {
+							scheduleId: v4(),
+							videoId: v.id,
+							duration: v.duration,
+							startTime: 0,
+							thumbnail: v.thumbnail,
+							title: v.title
+						};
+					});
 
-		">Manage videos</a
-		>
+					schedule = [...schedule, ...toAdd];
+
+					for (let i = 0; i < schedule.length; i++) {
+						schedule[i].startTime =
+							i === 0 ? 0 : schedule[i - 1].startTime + schedule[i - 1].duration;
+					}
+				}}
+			>
+				<Icon icon="keyboard_double_arrow_left" />
+			</button>
+			<a
+				href="/channel/{channel.channelNumber}/videos"
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center flex-grow
+			
+			">Manage videos</a
+			>
+		</div>
+		<Divider />
+		<div class="flex">
+			<label for="show-scheduled" class="text-gray-200 text-sm">Show already scheduled videos</label
+			>
+			<Toggle bind:value={showScheduledVal} label="" design="slider" fontSize={12} />
+		</div>
 		{#if videos.length == 0}
 			<p class="text-gray-200">No videos yet! Manage this channel's videos</p>
 		{/if}
-		{#each videos as video}
-			<VideoPreview {video} />
-		{/each}
+		<div class="flex flex-col gap-2 overflow-y-scroll h-full">
+			{#each shownVideos as video}
+				<VideoPreview {video} />
+			{/each}
+		</div>
 	</div>
 </div>
 

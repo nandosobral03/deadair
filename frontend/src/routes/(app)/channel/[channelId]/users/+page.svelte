@@ -37,9 +37,13 @@
 	channel={data.channel}
 	allowEdit={false}
 	userId={payload.sub}
-	allowWatch={true}
+	allowWatch={false}
 	showUsers={false}
 />
+
+{#if data.users.length == 0}
+	<span class="text-white">No users found </span>
+{/if}
 
 {#each data.users as user}
 	<div

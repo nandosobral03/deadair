@@ -110,7 +110,7 @@
 		{/if}
 	</div>
 
-	<div class="w-1/2 h-full max-w-3xl">
+	<div class="h-full max-w-3xl aspect-square p-4">
 		{#if browser}
 			<img
 				class="object-cover h-full w-full place-content-start rounded-md"
@@ -121,7 +121,7 @@
 		{/if}
 	</div>
 	<Divider vertical class="bg-primary mx-6" />
-	<div class="flex flex-col gap-2 w-1/2 h-full p-6 justify-between">
+	<div class="flex flex-col gap-2 flex-grow h-full p-6 justify-between">
 		<div class="flex flex-col gap-2">
 			<h1 class="text-4xl text-primary opacity-100">{channel.name}</h1>
 			<p class="text-gray-200 overflow-y-auto h-24">

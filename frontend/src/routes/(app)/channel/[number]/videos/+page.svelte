@@ -7,11 +7,16 @@
 	import type { PageServerData } from './$types';
 	import { parseHTTPError } from '$lib/utils/error';
 	import { loadingStore } from '$lib/stores/loading.store';
-	export let data: PageServerData;
+	import type { LayoutServerData } from '../../../$types';
+	import { modalStore } from '$lib/stores/modal.store';
+	import MassAddModal from '$lib/modals/MassAddModal.svelte';
+	export let data: PageServerData & LayoutServerData;
 	let videoUrl: string = '';
 	videoStore.update((store) => {
 		return store.set(data.channel.id, data.videos);
 	});
+
+	const payload = data.payload!;
 	const addVideo = async () => {
 		let id = '';
 		try {
@@ -48,16 +53,29 @@
 			loadingStore.setLoading(false);
 		}
 	};
+
+	const massAdd = async () => {
+		modalStore.set({
+			title: 'Mass Add Videos',
+			component: MassAddModal,
+			props: {
+				channelId: data.channel.id,
+				token: data.token,
+				type: data.channel.userId ? 'user' : 'public'
+			},
+			size: 'lg'
+		});
+	};
 </script>
 
-<ChannelHeader channel={data.channel} />
+<ChannelHeader channel={data.channel} allowEdit={true} userId={payload.sub} allowWatch={false} />
 <div class="flex gap-2 p-4 w-full">
 	<input
 		bind:value={videoUrl}
 		type="text"
 		placeholder="https://www.youtube.com/watch?v=..."
 		class="w-full h-12 px-4 bg-gray-950 text-gray-200
-            straight-shadow
+            straight-shadow max-w-4xl
         "
 	/>
 	<button
@@ -65,6 +83,12 @@
 		class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow"
 	>
 		<Icon icon="add" className="text-white text-2xl" />
+	</button>
+	<button
+		on:click={() => massAdd()}
+		class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow ml-auto"
+	>
+		<Icon icon="shadow_add" className="text-white text-2xl" />
 	</button>
 </div>
 <VideoGrid channel={data.channel} />

@@ -14,14 +14,14 @@
 
 	const getStartTime = (seconds: number) => {
 		const duration = dayjs.duration(seconds, 's');
-		let day = duration.days();
+		let day = duration.days() % 7;
 		return `${days[day]} ${duration.format('HH:mm')}`;
 	};
 </script>
 
 <div class="flex flex-row items-center justify-between w-full h-24 p-2 gap-6 relative">
 	{#if showDelete}
-		<button class="absolute top-2 right-2 text-gray-200 hoverable" on:click={handleDelete}>
+		<button class="absolute top-2 right-2 text-gray-200 hoverable z-20" on:click={handleDelete}>
 			<Icon icon="close" />
 		</button>
 	{/if}

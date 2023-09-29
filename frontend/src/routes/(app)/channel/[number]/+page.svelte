@@ -7,7 +7,7 @@
 	const paylaod = data.payload!;
 </script>
 
-<ChannelHeader channel={data.channel} allowEdit={true} userId={paylaod.sub} allowWatch={true} />
+<ChannelHeader channel={data.channel} allowEdit={true} userId={paylaod.sub} allowWatch={false} />
 <Schedule
 	channel={data.channel}
 	videos={data.videos}
