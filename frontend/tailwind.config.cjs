@@ -10,6 +10,9 @@ const config = {
 				"primary-dim": "#fead89",
 				background: "#1D1D26",
 			},
+			fontSize: {
+				"2xs": ".5rem",
+			},
 			width: {
 				"1/8": "12.5%",
 				"2/8": "25%",
