@@ -17,7 +17,7 @@
 >
 	{#if item.error && tooltipVisible}
 		<div
-			class="absolute z-20 bg-red-500 text-white p-2 rounded-md shadow-md -top-12 transform -translate-x-1/2
+			class="absolute z-90 bg-red-500 text-white p-2 rounded-md shadow-md -top-12 transform -translate-x-1/2
 			w-max whitespace-nowrap
 			"
 		>

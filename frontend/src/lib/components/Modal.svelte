@@ -13,9 +13,9 @@
 	>
 		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 		<div
-			class={`${$modalStore?.size || 'sm'} bg-gray-900 flex flex-col gap-4 p-6 z-30 straight-shadow
-				overflow-auto
-			`}
+			class={`${
+				$modalStore?.size || 'sm'
+			} bg-gray-900 flex flex-col gap-4 p-6 z-30 straight-shadow`}
 			on:click|stopPropagation
 			on:keydown|stopPropagation
 			role="dialog"

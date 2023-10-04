@@ -4,11 +4,16 @@
 	import duration from 'dayjs/plugin/duration';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import Icon from './Icon.svelte';
+	import { sleepingStore, sleepingTimerStore } from '$lib/stores/sleeping.store';
+	import { browser } from '$app/environment';
+	import { modalStore } from '$lib/stores/modal.store';
+	import SleepingModal from '$lib/modals/Sleeping.modal.svelte';
 	let shown = true;
+	let frame: HTMLIFrameElement;
 	let upcomingVideo: ScheduleGet | null = null;
 	export let originalSchedule: ScheduleGet[];
 	export let channelName: string;
-
 	dayjs.extend(duration);
 	let schedule: ScheduleGet[] = [...originalSchedule];
 
@@ -19,7 +24,21 @@
 		return secondsSinceMonday;
 	};
 
+	let interval: NodeJS.Timeout | null = null;
+
 	onMount(() => {
+		startInterval();
+		return () => {
+			clear();
+		};
+	});
+
+	const clear = () => {
+		if (interval) clearInterval(interval);
+		interval = null;
+	};
+
+	const startInterval = () => {
 		if (schedule.length === 0) return;
 		let totalDuration = schedule.reduce((acc, curr) => acc + curr.duration, 0);
 		let current = 0;
@@ -45,7 +64,10 @@
 		let after = schedule.slice(currentVideoIndex);
 		schedule = [...after, ...before];
 
-		const interval = setInterval(() => {
+		console.log('Interval started');
+		console.log(schedule);
+		setCurrentVideoUrl();
+		interval = setInterval(() => {
 			let currentVideo = schedule[0];
 			const currentTime = timeSinceWeekStart();
 			if (currentVideo.endTime - 10 < currentTime) {
@@ -60,22 +82,53 @@
 				currentVideo = schedule[currentVideoIndex];
 				const last = schedule.shift();
 				if (last) schedule.push(last);
-				schedule = schedule;
+				setCurrentVideoUrl();
 				shown = true;
 			}
 		}, 1000);
+	};
 
-		return () => {
-			clearTimeout(interval);
-		};
-	});
+	const setCurrentVideoUrl = () => {
+		currentVideoUrl =
+			schedule.length > 0
+				? `https://www.youtube.com/embed/${schedule[0].videoId}?start=${
+						timeSinceWeekStart() - schedule[0].startTime
+				  }&rel=0&controls=1&autoplay=1&mute=0&enablejsapi=1`
+				: '';
+	};
 
-	$: currentVideoUrl =
-		schedule.length > 0
-			? `https://www.youtube.com/embed/${schedule[0].videoId}?start=${
-					timeSinceWeekStart() - schedule[0].startTime
-			  }&rel=0&controls=1&autoplay=1&mute=0`
-			: '';
+	let currentVideoUrl = '';
+
+	$: {
+		if (browser) {
+			if ($sleepingStore) {
+				frame?.contentWindow?.postMessage('{"event":"command","func":"mute","args":""}', '*');
+				frame?.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+				console.log('sleep', interval);
+				if (interval) {
+					clear();
+					console.log('cleared');
+					console.log(interval);
+				}
+			} else {
+				frame?.contentWindow?.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+				frame?.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+				console.log('start', interval);
+				if (!interval) {
+					startInterval();
+				}
+			}
+		}
+	}
+
+	const sleep = () => {
+		modalStore.set({
+			title: 'Sleep',
+			component: SleepingModal,
+			props: {},
+			size: 'sm'
+		});
+	};
 </script>
 
 <svelte:head>
@@ -85,14 +138,24 @@
 </svelte:head>
 
 {#if shown}
-	<iframe
-		src={currentVideoUrl}
-		frameborder="0"
-		allow="autoplay; encrypted-media"
-		allowfullscreen
-		title="Embedded youtube"
-		class="w-full h-full"
-	/>
+	<div class="w-full h-full relative">
+		<iframe
+			src={currentVideoUrl}
+			frameborder="0"
+			allow="autoplay; encrypted-media;"
+			allowfullscreen
+			title="Embedded youtube"
+			class="w-full h-full"
+			bind:this={frame}
+		/>
+		<button class="absolute top-12 right-0 py-4 px-6" on:click={sleep}>
+			{#if $sleepingTimerStore}
+				<Icon icon="sleep_score" className="text-white animate-pulse" />
+			{:else}
+				<Icon icon="bedtime" className="text-white" />
+			{/if}
+		</button>
+	</div>
 {/if}
 {#if upcomingVideo}
 	<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
@@ -114,6 +177,5 @@
 {/if}
 
 {#if schedule.length == 0}
-	<!-- ADD EMPTY STATE -->
 	<div class="text-center text-white">No videos scheduled</div>
 {/if}

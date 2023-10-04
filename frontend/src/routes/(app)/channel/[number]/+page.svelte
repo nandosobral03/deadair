@@ -4,10 +4,10 @@
 	import type { LayoutServerData } from '../../$types';
 	import type { PageServerData } from './$types';
 	export let data: PageServerData & LayoutServerData;
-	const paylaod = data.payload!;
+	const payload = data.payload!;
 </script>
 
-<ChannelHeader channel={data.channel} allowEdit={true} userId={paylaod.sub} allowWatch={false} />
+<ChannelHeader channel={data.channel} allowEdit={true} userId={payload.sub} allowWatch={false} />
 <Schedule
 	channel={data.channel}
 	videos={data.videos}
