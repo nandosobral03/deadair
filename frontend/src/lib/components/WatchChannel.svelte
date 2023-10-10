@@ -137,7 +137,9 @@
 	>
 </svelte:head>
 
-{#if shown}
+{#if schedule.length == 0}
+	<div class="text-center text-white w-full h-full relative">No videos scheduled</div>
+{:else if shown}
 	<div class="w-full h-full relative">
 		<iframe
 			src={currentVideoUrl}
@@ -155,27 +157,23 @@
 				<Icon icon="bedtime" className="text-white" />
 			{/if}
 		</button>
-	</div>
-{/if}
-{#if upcomingVideo}
-	<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
-		<div class="bg-gray-950 bg-opacity-80 rounded-lg p-4 flex gap-4">
-			<img src={upcomingVideo.thumbnail} class="w-32 h-24 rounded-lg" alt="" />
-			<div class="flex flex-col gap-1 flex-grow">
-				<span class="text-primary text-md"> Up next: </span>
-				<div class="text-white text-sm">
-					{upcomingVideo.title}
-				</div>
-				<div class="text-white text-sm w-full text-end">
-					{dayjs.duration(upcomingVideo.startTime, 'seconds').format('HH:mm:ss')} - {dayjs
-						.duration(upcomingVideo.endTime, 'seconds')
-						.format('HH:mm:ss')}
+		{#if upcomingVideo}
+			<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
+				<div class="bg-gray-950 bg-opacity-80 rounded-lg p-4 flex gap-4">
+					<img src={upcomingVideo.thumbnail} class="w-32 h-24 rounded-lg" alt="" />
+					<div class="flex flex-col gap-1 flex-grow">
+						<span class="text-primary text-md"> Up next: </span>
+						<div class="text-white text-sm">
+							{upcomingVideo.title}
+						</div>
+						<div class="text-white text-sm w-full text-end">
+							{dayjs.duration(upcomingVideo.startTime, 'seconds').format('HH:mm:ss')} - {dayjs
+								.duration(upcomingVideo.endTime, 'seconds')
+								.format('HH:mm:ss')}
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
-{/if}
-
-{#if schedule.length == 0}
-	<div class="text-center text-white">No videos scheduled</div>
 {/if}

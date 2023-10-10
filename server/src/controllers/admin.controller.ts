@@ -6,7 +6,7 @@ router.put("/channel/:channelId/schedule", c.putPublicChannelScheduleCall);
 import { NextFunction, Request, Response } from "express"
 import { deleteChannel, insertChannel, putChannelSchedule, updateChannel } from "../services/channel.service";
 import { isCreateChannel, isCreateSchedule } from "../models/channel.model";
-import { addVideoToChannel, removeVideoFromChannel } from "../services/video.service";
+import { addPlaylistToChannel, addVideoToChannel, removeVideoFromChannel } from "../services/video.service";
 import { TokenPayload } from "../middleware/jwt.middleware";
 
 
@@ -109,4 +109,19 @@ const removeVideoFromChannelCall = async (req: Request, res: Response, next: Nex
 }
 
 
-export default { createPublicChannelCall, updatePublicChannelCall, deletePublicChannelCall, putPublicChannelScheduleCall, addVideoToChannelCall, removeVideoFromChannelCall }
+const addPlaylistToChannelCall = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const payload: TokenPayload = res.locals.payload;
+        if (!payload.isAdmin) throw { status: 401, message: "Unauthorized" };
+        const { id, channelId } = req.params;
+        const result = await addPlaylistToChannel(id, channelId);
+        res.status(200).send(result);
+
+    }
+    catch (err: any) {
+        next(err)
+    }
+}
+
+
+export default { createPublicChannelCall, updatePublicChannelCall, deletePublicChannelCall, putPublicChannelScheduleCall, addVideoToChannelCall, removeVideoFromChannelCall, addPlaylistToChannelCall };

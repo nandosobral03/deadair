@@ -3,14 +3,15 @@ import type { ScheduleCreateRequest } from "$lib/model/schedule.model";
 import { loadingStore } from "$lib/stores/loading.store";
 import axios from "axios";
 
-export const putScheduleAPI = async (schedule: ScheduleCreateRequest[], channelId: string, token: string, type: "user" | "public") => {
+export const putScheduleAPI = async (schedule: ScheduleCreateRequest[], channelId: string, token: string, type: "user" | "public", randomize: boolean) => {
     loadingStore.setMessage('Updating schedule...');
 
     const url = type === "public" ? `${PUBLIC_API_URL}/admin/channel/${channelId}/schedule` : `${PUBLIC_API_URL}/schedule/${channelId}`;
     const data = await axios.put(
         url,
         {
-            items: schedule
+            items: schedule,
+            randomize
         },
         {
             headers: {

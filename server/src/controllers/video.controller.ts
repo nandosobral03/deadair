@@ -1,6 +1,6 @@
 import { isCreateVideoModel } from "../models/video.model"
 import { Request, Response } from "express";
-import { createVideo, getVideos, getVideo, addVideoToChannel, removeVideoFromChannel } from "../services/video.service";
+import { createVideo, getVideos, getVideo, addVideoToChannel, removeVideoFromChannel, addPlaylistToChannel } from "../services/video.service";
 import { TokenPayload } from "../middleware/jwt.middleware";
 
 const addVideoCall = async (req: Request, res: Response, next: any) => {
@@ -74,4 +74,18 @@ const removeVideoFromChannelCall = async (req: Request, res: Response, next: any
 }
 
 
-export default { addVideoCall, getVideosCall, getVideoCall, addVideoToChannelCall, removeVideoFromChannelCall }
+const addPlaylistTochannelCall = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id, channelId } = req.params;
+        const payload: TokenPayload = res.locals.payload;
+        const userId = payload.sub
+        const result = await addPlaylistToChannel(id, channelId, userId);
+        res.status(200).send(result);
+    }
+    catch (err: any) {
+        next(err);
+    }
+}
+
+
+export default { addVideoCall, getVideosCall, getVideoCall, addVideoToChannelCall, removeVideoFromChannelCall, addPlaylistTochannelCall };

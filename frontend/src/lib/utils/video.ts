@@ -23,3 +23,12 @@ export const removeVideoFromChannel = async (channelId: string, videoId: string,
     videoStore.update((all) => all.set(channelId, (all.get(channelId) || []).filter((v) => v.id !== video.data.id)));
     return data;
 }
+
+
+export const addPlaylistToChannelAPI = async (id: string, playlistId: string, token: string, type: "user" | "public") => {
+    loadingStore.setMessage('Adding playlist to channel...');
+    const url = type === 'public' ? `${PUBLIC_API_URL}/admin/playlist/${playlistId}/channel/${id}` : `${PUBLIC_API_URL}/playlists/${playlistId}/channel/${id}`;
+    const data = await axios.post(url, {}, { headers: { 'Authorization': `Bearer ${token}` } });
+    videoStore.update((all) => all.set(id, [...all.get(id) || [], ...data.data]));
+    return data;
+}

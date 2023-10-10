@@ -86,3 +86,10 @@ export const durationToSeconds = (duration: string) => {
 export const getCategoryName = (id: string) => {
     return categoryMap.get(id.trim());
 }
+
+export const getPlaylistItems = async (playlistId: string) => {
+    const playlistItems = await YoutubeAPI.playlistItems.list({ playlistId: playlistId, part: ['contentDetails'], maxResults: 50 });
+    return playlistItems.data.items?.map((item) => item.contentDetails?.videoId) as string[];
+
+
+}

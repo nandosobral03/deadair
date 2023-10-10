@@ -21,7 +21,8 @@ export const isChannel = (obj: any): obj is Channel => {
 
 
 export type CreateSchedule = {
-    items: CreateScheduleItem[]
+    items: CreateScheduleItem[],
+    randomize: boolean,
 }
 
 export type CreateScheduleItem = {

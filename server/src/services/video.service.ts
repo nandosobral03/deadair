@@ -1,4 +1,4 @@
-import { YoutubeAPI, durationToSeconds, getCategoryName } from '../utils/youtube';
+import { YoutubeAPI, durationToSeconds, getCategoryName, getPlaylistItems } from '../utils/youtube';
 import { db } from '../database/db';
 import { VideoInsert } from '../database/types';
 import { channelIsPublicOrUserIsOwner, userCanSeeChannel } from './channel.service';
@@ -65,7 +65,8 @@ export const addVideoToChannel = async (id: string, channelId: string, userId?: 
         const exists = await db.selectFrom('videoChannel').select(['videoId']).where("videoId", "=", id).where("channelId", "=", channelId).executeTakeFirst();
         if (exists) throw { status: 409, message: 'Video already in channel' };
         const videoId = await db.insertInto('videoChannel').values({ videoId: id, channelId: channelId, userId: userId }).returning("videoId").execute();
-        return videoId;
+        const video = await getVideo(id);
+        return video;
     }
     else {
         const channel = await db.selectFrom('channel').select(['id']).where("id", "=", channelId).where("userId", "is", undefined).executeTakeFirst();
@@ -73,7 +74,9 @@ export const addVideoToChannel = async (id: string, channelId: string, userId?: 
         const exists = await db.selectFrom('videoChannel').select(['videoId']).where("videoId", "=", id).where("channelId", "=", channelId).executeTakeFirst();
         if (exists) throw { status: 409, message: 'Video already in channel' };
         const videoId = await db.insertInto('videoChannel').values({ videoId: id, channelId: channelId }).returning("videoId").execute();
-        return videoId;
+        const video = await getVideo(id);
+        return video;
+
     }
 }
 
@@ -104,3 +107,12 @@ export const getVideos = async ({ channelId, userId }: { channelId?: string, use
     }
 }
 
+
+export const addPlaylistToChannel = async (playlistId: string, channelId: string, userId?: string) => {
+    if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
+    const playlistVideos: string[] = await getPlaylistItems(playlistId);
+    const promises = playlistVideos.map(async (video) => { return await addVideoToChannel(video, channelId, userId) })
+    const results = (await Promise.allSettled(promises)).filter((result) => result.status === 'fulfilled').map((result) => (result as any).value);
+    console.log(results);
+    return results;
+}

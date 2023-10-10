@@ -1,6 +1,7 @@
+import dayjs from 'dayjs';
 import { db } from '../database/db';
 import { ChannelInsert, ChannelUpdate } from '../database/types';
-import { CreateChannel, CreateSchedule, CreateScheduleItem } from '../models/channel.model';
+import { CreateChannel, CreateSchedule } from '../models/channel.model';
 import { timeSinceWeekStart } from '../utils/time';
 import { ulid } from 'ulid'
 
@@ -12,7 +13,7 @@ const checkIfChannelNumberExists = async (channelNumber: number, userId?: string
 
 
 export const userCanSeeChannel = async (channelId: string, userId?: string) => {
-    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
+    const channel = await db.selectFrom('channel').select(['id', 'userId']).where("id", "=", channelId).executeTakeFirst();
     if (!channel) throw { status: 404, message: 'Channel not found' }
     const channelIsPublic = channel.userId === null;
     if (!userId) {
@@ -25,7 +26,7 @@ export const userCanSeeChannel = async (channelId: string, userId?: string) => {
 }
 
 export const channelIsPublicOrUserIsOwner = async (channelId: string, userId?: string) => {
-    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", channelId).executeTakeFirst();
+    const channel = await db.selectFrom('channel').select(['id', 'userId']).where("id", "=", channelId).executeTakeFirst();
     if (!channel) throw { status: 404, message: 'Channel not found' }
     const channelIsPublic = channel.userId === null;
     if (!userId) {
@@ -44,6 +45,8 @@ export const insertChannel = async (channel: CreateChannel, userId?: string) => 
         ...channel,
         userId,
         createdAt: new Date().getTime().toString(),
+        randomize: 0,
+        shouldRandomizeAfter: 0,
     }
     const channelInsert = db.insertInto('channel').values(insert).returning("id");
     try {
@@ -63,11 +66,11 @@ export const getChannels = async (userId: string | undefined) => {
     let sharedChannels: { id: string, name: string, thumbnail: string, description: string, channelNumber: number }[] = [];
     if (userId) {
         userChannels = await db.selectFrom('channel')
-            .select(['id', 'name', 'thumbnail', 'description', 'channelNumber'])
+            .select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'randomize', 'shouldRandomizeAfter'])
             .where("userId", "=", userId).execute();
 
         sharedChannels = await db.selectFrom('channel')
-            .select(['channel.id', 'channel.name', 'channel.thumbnail', 'channel.description', 'channel.channelNumber'])
+            .select(['channel.id', 'channel.name', 'channel.thumbnail', 'channel.description', 'channel.channelNumber', 'randomize', 'shouldRandomizeAfter'])
             .leftJoin('sharedChannel', 'channel.id', 'sharedChannel.channelId')
             .where("sharedChannel.userId", "=", userId).execute();
 
@@ -88,7 +91,7 @@ export const getChannels = async (userId: string | undefined) => {
 
 
 export const getChannel = async (id: string, userId?: string) => {
-    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("id", "=", id).executeTakeFirst();
+    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId', 'shouldRandomizeAfter', 'randomize']).where("id", "=", id).executeTakeFirst();
     if (!channel) throw {
         status: 404,
         message: 'Channel not found'
@@ -137,7 +140,16 @@ export const updateChannel = async (id: string, channel: CreateChannel, userId?:
 
 
 export const getChannelSchedule = async (channelId: string, userId?: string) => {
-    if (! await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
+    if (!await userCanSeeChannel(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
+    const channel = await db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId', 'shouldRandomizeAfter', 'randomize']).where("id", "=", channelId).executeTakeFirst();
+    if (channel?.randomize && channel.shouldRandomizeAfter < dayjs().valueOf()) {
+        const schedule = await db.selectFrom('schedule_item').select(['channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId).rightJoin('video', 'schedule_item.videoId', 'video.id').select(['video.title', 'video.thumbnail', 'video.duration', 'video.category']).execute();
+        const shuffledSchedule = schedule.sort(() => Math.random() - 0.5);
+        const shouldRandomizeAfter = dayjs().add(1, 'week').startOf('week').add(1, 'day').valueOf();
+        await db.updateTable('channel').set({ shouldRandomizeAfter }).where("id", "=", channelId).execute();
+        return shuffledSchedule;
+    }
+
     const schedule = await db.selectFrom('schedule_item').select(['channelId', 'videoId', 'startTime', 'endTime']).where("channelId", "=", channelId).rightJoin('video', 'schedule_item.videoId', 'video.id').select(['video.title', 'video.thumbnail', 'video.duration', 'video.category']).execute();
     return schedule;
 }
@@ -147,6 +159,7 @@ export const clearChannelSchedule = async (channelId: string, userId?: string) =
     if (! await channelIsPublicOrUserIsOwner(channelId, userId)) throw { status: 401, message: 'Unauthorized' }
 
     await db.deleteFrom('schedule_item').where("channelId", "=", channelId).execute();
+    await db.updateTable('channel').set({ randomize: 0, shouldRandomizeAfter: 0 }).where("id", "=", channelId).execute();
 }
 
 export const putChannelSchedule = async (channelId: string, schedule: CreateSchedule, userId?: string) => {
@@ -166,6 +179,10 @@ export const putChannelSchedule = async (channelId: string, schedule: CreateSche
         })
     }
     await db.insertInto('schedule_item').values(scheduleInsert).execute();
+    if (schedule.randomize) {
+        const shouldRandomizeAfter = dayjs().add(1, 'week').startOf('week').add(1, 'day').valueOf();
+        await db.updateTable('channel').set({ randomize: 1, shouldRandomizeAfter: shouldRandomizeAfter }).where("id", "=", channelId).execute();
+    }
 }
 
 export const getCurrentVideo = async (channelId: string, userId?: string) => {
@@ -204,7 +221,7 @@ export const getScheduleSummary = async (channelId: string, userId?: string) => 
 }
 
 export const getChannelByChannelNumber = async (channelNumber: number, userId?: string) => {
-    let statement = db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId']).where("channelNumber", "=", channelNumber);
+    let statement = db.selectFrom('channel').select(['id', 'name', 'thumbnail', 'description', 'channelNumber', 'userId', 'randomize', 'shouldRandomizeAfter']).where("channelNumber", "=", channelNumber);
     const channel = await statement.where("userId", "is", undefined).executeTakeFirst();
     if (channel) return channel;
     else {

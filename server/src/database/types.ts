@@ -19,6 +19,7 @@ export interface VideosTable {
     duration: number;
     category: string;
     youtubeChannel: string;
+
 }
 
 export interface VideoChannelTable {
@@ -45,6 +46,8 @@ export interface ChannelsTable {
     channelNumber: number;
     userId: string | undefined;
     createdAt: ColumnType<string, string, never>
+    randomize: number;
+    shouldRandomizeAfter: number;
 }
 
 export type Channel = Selectable<ChannelsTable>;

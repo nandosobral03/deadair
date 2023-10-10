@@ -26,6 +26,8 @@ export const load = async ({ params, cookies }) => {
             Authorization: `Bearer ${token}`,
         },
     })
+
+    console.log(channel)
     return {
         channel: channel.data as Channel,
         videos: videos.data as Video[],

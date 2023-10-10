@@ -20,9 +20,9 @@ export const createChannelAPI = async (name: string, description: string, channe
         }
     );
     if (type === 'public') {
-        channelStore.update((all) => ({ ...all, publicChannels: [...all.publicChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '' }] }));
+        channelStore.update((all) => ({ ...all, publicChannels: [...all.publicChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '', randomize: false, shouldRandomizeAt: 0 }] }));
     } else {
-        channelStore.update((all) => ({ ...all, userChannels: [...all.userChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '' }] }));
+        channelStore.update((all) => ({ ...all, userChannels: [...all.userChannels, { id: data.data.id, name, description, channelNumber, thumbnail: '', randomize: false, shouldRandomizeAt: 0 }] }));
     }
     return { id: data.data.id }
 }
@@ -46,9 +46,9 @@ export const updateChannelAPI = async (id: string, name: string, description: st
         }
     );
     if (type === 'public') {
-        channelStore.update((all) => ({ ...all, publicChannels: all.publicChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail } } else { return channel } }) }));
+        channelStore.update((all) => ({ ...all, publicChannels: all.publicChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail, randomize: false, shouldRandomizeAt: 0 } } else { return channel } }) }));
     } else {
-        channelStore.update((all) => ({ ...all, userChannels: all.userChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail } } else { return channel } }) }));
+        channelStore.update((all) => ({ ...all, userChannels: all.userChannels.map((channel) => { if (channel.id === id) { return { id, name, description, channelNumber, thumbnail, randomize: false, shouldRandomizeAt: 0 } } else { return channel } }) }));
     }
     return data;
 }
@@ -80,6 +80,9 @@ export const joinChannelAPI = async (id: string, token: string) => {
     });
     return data;
 }
+
+
+
 
 
 

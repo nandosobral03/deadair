@@ -5,4 +5,6 @@ export type Channel = {
     description: string
     channelNumber: number
     userId?: string
+    randomize: boolean
+    shouldRandomizeAt: number
 }

@@ -18,9 +18,12 @@
 	import { tokenStore } from '$lib/stores/token.store';
 	import { parseHTTPError } from '$lib/utils/error';
 	import Toggle from './Toggle.svelte';
+	import autoAnimate from '@formkit/auto-animate';
 	import Icon from './Icon.svelte';
 	let showScheduledVal: 'on' | 'off' = 'off';
 	$: showScheduled = showScheduledVal === 'on';
+	let randomizeWeeklyVal: boolean = channel.randomize;
+
 	let shownVideos: Video[] = videos;
 	$: {
 		console.log(showScheduled);
@@ -57,7 +60,13 @@
 		});
 		try {
 			console.log(channel);
-			await putScheduleAPI(items, channel.id, $tokenStore!, channel.userId ? 'user' : 'public');
+			await putScheduleAPI(
+				items,
+				channel.id,
+				$tokenStore!,
+				channel.userId ? 'user' : 'public',
+				randomizeWeeklyVal
+			);
 			toastStore.addToast({
 				title: 'Success',
 				text: 'Schedule updated',
@@ -75,9 +84,10 @@
 	const handleDrop = (index: number) => {
 		return (data: string) => {
 			{
+				let aux = schedule;
 				const item = JSON.parse(data);
 				if (item.scheduleId) {
-					schedule = schedule.filter((s) => s.scheduleId !== item.scheduleId);
+					aux = schedule.filter((s) => s.scheduleId !== item.scheduleId);
 				} else {
 					if (total.asSeconds() > 7 * 24 * 60 * 60) {
 						return;
@@ -92,13 +102,15 @@
 					thumbnail: item.thumbnail,
 					title: item.title
 				};
-				const s = [...schedule.slice(0, index + 1), scheduleItem, ...schedule.slice(index + 1)];
+				// const s = [...aux.slice(0, index + 1), scheduleItem, ...aux.slice(index + 1)];
 
-				s.reduce((acc, curr) => {
+				// Insert schedule item at index without ...
+				aux.splice(index + 1, 0, scheduleItem);
+				aux.reduce((acc, curr) => {
 					curr.startTime = acc;
 					return acc + curr.duration;
 				}, 0);
-				schedule = s;
+				schedule = aux;
 			}
 		};
 	};
@@ -119,15 +131,27 @@
 </span>
 <div class="flex w-full h-full overflow-x-hidden gap-4">
 	<div
-		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-2 relative px-4 overflow-x-hidden"
+		use:autoAnimate={{ duration: 100 }}
+		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-4 relative px-4 overflow-x-hidden"
 	>
-		<div class="w-full flex gap-4">
+		<div class="w-full flex gap-2">
 			<button
 				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 flex-grow"
 				on:click={() => {
 					handleSave(schedule);
 				}}
 				>Save Schedule
+			</button>
+			<button
+				class="flex items-center"
+				on:click={() => (randomizeWeeklyVal = !randomizeWeeklyVal)}
+				title="Randomize weekly schedule"
+			>
+				{#if randomizeWeeklyVal}
+					<Icon icon="shuffle" className="text-primary" />
+				{:else}
+					<Icon icon="shuffle" className="text-gray-200" />
+				{/if}
 			</button>
 			<button
 				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 aspect-square grid place-items-center"
@@ -159,32 +183,34 @@
 			/>
 		{/if}
 		{#each schedule as item, index}
-			<div
-				class="flex flex-row p-2 bg-gray-950 rounded-md relative hover:bg-gray-800"
-				use:draggable={JSON.stringify({
-					...item,
-					id: item.videoId
-				})}
-			>
+			{#key item.scheduleId}
 				<div
-					class="w-full h-2/5 absolute top-0 left-0 top-drop z-10"
-					use:dropzone={{
-						on_dropzone: handleDrop(index - 1)
-					}}
-				/>
+					class="flex flex-row p-2 bg-gray-950 rounded-md relative hover:bg-gray-800"
+					use:draggable={JSON.stringify({
+						...item,
+						id: item.videoId
+					})}
+				>
+					<div
+						class="w-full h-2/5 absolute top-0 left-0 top-drop z-10"
+						use:dropzone={{
+							on_dropzone: handleDrop(index - 1)
+						}}
+					/>
 
-				<div
-					class="w-full h-2/5 absolute bottom-0 left-0 bottom-drop z-10"
-					use:dropzone={{
-						on_dropzone: handleDrop(index)
-					}}
-				/>
-				<ScheduleVideo
-					showDelete
-					{item}
-					on:delete={() => (schedule = schedule.filter((s) => s.scheduleId !== item.scheduleId))}
-				/>
-			</div>
+					<div
+						class="w-full h-2/5 absolute bottom-0 left-0 bottom-drop z-10"
+						use:dropzone={{
+							on_dropzone: handleDrop(index)
+						}}
+					/>
+					<ScheduleVideo
+						showDelete
+						{item}
+						on:delete={() => (schedule = schedule.filter((s) => s.scheduleId !== item.scheduleId))}
+					/>
+				</div>
+			{/key}
 		{/each}
 		<div
 			class="flex flex-row flex-grow rounded-md"

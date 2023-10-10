@@ -29,7 +29,7 @@
 
 	onMount(() => {
 		const interval = setInterval(() => {
-			currentTime = timeSinceWeekStart() - item.startTime;
+			currentTime = Math.min(timeSinceWeekStart() - item.startTime, item.duration);
 		}, 1000);
 		return () => {
 			clearInterval(interval);

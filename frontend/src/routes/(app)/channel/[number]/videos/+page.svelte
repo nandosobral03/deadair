@@ -10,6 +10,7 @@
 	import type { LayoutServerData } from '../../../$types';
 	import { modalStore } from '$lib/stores/modal.store';
 	import MassAddModal from '$lib/modals/MassAddModal.svelte';
+	import AddPlaylist from '$lib/modals/AddPlaylist.model.svelte';
 	export let data: PageServerData & LayoutServerData;
 	let videoUrl: string = '';
 	videoStore.update((store) => {
@@ -67,6 +68,20 @@
 			size: 'lg'
 		});
 	};
+
+	const addPlaylist = async () => {
+		modalStore.set({
+			title: 'Add Playlist',
+			component: AddPlaylist,
+			props: {
+				channelId: data.channel.id,
+				token: data.token,
+				type: data.channel.userId ? 'user' : 'public',
+				isPlaylist: true
+			},
+			size: 'xs'
+		});
+	};
 </script>
 
 <ChannelHeader channel={data.channel} allowEdit={true} userId={payload.sub} allowWatch={false} />
@@ -85,11 +100,21 @@
 	>
 		<Icon icon="add" className="text-white text-2xl" />
 	</button>
-	<button
-		on:click={() => massAdd()}
-		class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow ml-auto"
-	>
-		<Icon icon="shadow_add" className="text-white text-2xl" />
-	</button>
+
+	<div class="ml-auto flex gap-2">
+		<button
+			on:click={() => addPlaylist()}
+			class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow ml-auto"
+		>
+			<Icon icon="playlist_add" className="text-white text-2xl" />
+		</button>
+
+		<button
+			on:click={() => massAdd()}
+			class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow ml-auto"
+		>
+			<Icon icon="shadow_add" className="text-white text-2xl" />
+		</button>
+	</div>
 </div>
 <VideoGrid channel={data.channel} />

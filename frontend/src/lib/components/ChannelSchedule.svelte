@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import ScheduleVideoWithDuration from './ScheduleVideoWithDuration.svelte';
 	import Divider from './Divider.svelte';
+	import autoAnimate from '@formkit/auto-animate';
 	export let originalSchedule: ScheduleGet[];
 	dayjs.extend(duration);
 	let schedule: ScheduleGet[] = [...originalSchedule];
@@ -59,8 +60,11 @@
 	});
 </script>
 
-<div class="flex flex-col gap-4 overflow-y-auto">
-	<div class="flex flex-row p-2 rounded-md relative bg-primary mx-4 straight-shadow">
+<div class="flex flex-col gap-4 overflow-y-auto" use:autoAnimate={{ duration: 100 }}>
+	<div
+		class="flex flex-row p-2 rounded-md relative bg-primary mx-4 straight-shadow"
+		use:autoAnimate={{ duration: 100 }}
+	>
 		<ScheduleVideoWithDuration item={{ ...schedule[0], scheduleId: '1' }} />
 	</div>
 	<Divider class="min-h-fit" />

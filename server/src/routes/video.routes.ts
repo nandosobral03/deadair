@@ -7,6 +7,7 @@ const router = Router();
 router.get("/", jwtMiddlewareOptional, c.getVideosCall);
 router.get("/:id", jwtMiddlewareOptional, c.getVideoCall);
 router.post("/", jwtMiddleware, c.addVideoCall);
+router.post("/playlist/:id/channel/:channelId", jwtMiddleware, c.addPlaylistTochannelCall);
 router.put("/:id/channel/:channelId", jwtMiddleware, c.addVideoToChannelCall);
 router.delete("/:id/channel/:channelId", jwtMiddleware, c.removeVideoFromChannelCall);
 export default router;

@@ -11,5 +11,6 @@ router.put("/channel/:channelId", c.updatePublicChannelCall);
 router.put("/channel/:channelId/schedule", c.putPublicChannelScheduleCall);
 router.put("/video/:videoId/channel/:channelId", c.addVideoToChannelCall);
 router.delete("/video/:videoId/channel/:channelId", c.removeVideoFromChannelCall);
+router.post("/playlist/:id/channel/:channelId", jwtMiddleware, c.addPlaylistToChannelCall);
 
 export default router;
