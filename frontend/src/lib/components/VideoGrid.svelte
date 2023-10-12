@@ -62,6 +62,13 @@
 		grid-gap: 1rem;
 	}
 
+	@media (min-width: 768px) {
+		.channel-grid {
+			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+			grid-template-rows: repeat(auto-fill, 16rem);
+		}
+	}
+
 	.hoverable {
 		cursor: default !important;
 		> span {

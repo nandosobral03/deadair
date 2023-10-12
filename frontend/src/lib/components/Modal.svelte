@@ -32,21 +32,21 @@
 <style lang="scss">
 	.xs {
 		height: clamp(16rem, 20%, 20rem);
-		width: 30rem;
+		width: clamp(16rem, 20%, 20rem);
 	}
 
 	.sm {
 		height: clamp(24rem, 35%, 26rem);
-		width: 30rem;
+		width: clamp(16rem, 35%, 40vw);
 	}
 
 	.md {
 		height: clamp(24rem, 50%, 32rem);
-		width: 40rem;
+		width: clamp(16rem, 50%, 60vw);
 	}
 
 	.lg {
 		height: clamp(24rem, 70%, 40rem);
-		width: 50rem;
+		width: clamp(16rem, 70%, 90svw);
 	}
 </style>

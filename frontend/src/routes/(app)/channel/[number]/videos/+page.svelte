@@ -85,21 +85,23 @@
 </script>
 
 <ChannelHeader channel={data.channel} allowEdit={true} userId={payload.sub} allowWatch={false} />
-<div class="flex gap-2 p-4 w-full">
-	<input
-		bind:value={videoUrl}
-		type="text"
-		placeholder="https://www.youtube.com/watch?v=..."
-		class="w-full h-12 px-4 bg-gray-950 text-gray-200
-            straight-shadow max-w-4xl
+<div class="flex gap-4 w-full flex-col md:flex-row">
+	<div class="flex-grow flex gap-2">
+		<input
+			bind:value={videoUrl}
+			type="text"
+			placeholder="https://www.youtube.com/watch?v=..."
+			class="w-full h-12 px-4 bg-gray-950 text-gray-200
+		straight-shadow max-w-4xl
         "
-	/>
-	<button
-		on:click={() => addVideo()}
-		class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow"
-	>
-		<Icon icon="add" className="text-white text-2xl" />
-	</button>
+		/>
+		<button
+			on:click={() => addVideo()}
+			class="w-12 h-12 px-4 bg-primary text-gray-200 flex items-center justify-center straight-shadow"
+		>
+			<Icon icon="add" className="text-white text-2xl" />
+		</button>
+	</div>
 
 	<div class="ml-auto flex gap-2">
 		<button

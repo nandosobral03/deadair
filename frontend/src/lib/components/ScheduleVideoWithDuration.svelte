@@ -37,17 +37,21 @@
 	});
 </script>
 
-<div class="flex flex-row items-center justify-between w-full h-24 p-2 gap-6 relative">
+<div class="flex flex-row items-center justify-between w-full h-fit p-2 gap-6 relative">
 	{#if showDelete}
 		<button class="absolute top-2 right-2 text-gray-800 hoverable" on:click={handleDelete}>
 			<Icon icon="close" />
 		</button>
 	{/if}
-	<div class="flex flex-row items-center justify-start gap-4 w-full">
+	<div class="flex flex-col md:flex-row items-center justify-start gap-4 w-full">
 		<img class="w-32 rounded-md" src={item.thumbnail} alt={item.videoId} />
 		<div class="flex flex-col w-full h-full gap-1">
-			<p class="text-gray-800 w-10/12 text-lg">{item.title}</p>
-			<p class="text-gray-800 text-sm">
+			<p
+				class="text-gray-800 w-10/12 text-lg overflow-hidden overflow-ellipsis whitespace-nowrap mx-auto md:mx-0"
+			>
+				{item.title}
+			</p>
+			<p class="text-gray-800 w-10/12 mx-auto text-sm md:mx-0">
 				{dayjs.duration(currentTime, 's').format('HH:mm:ss')}
 				/
 				{dayjs.duration(item.duration, 's').format('HH:mm:ss')}

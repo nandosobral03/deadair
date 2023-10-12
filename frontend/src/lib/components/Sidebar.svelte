@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { tokenStore } from '$lib/stores/token.store';
 	import Icon from './Icon.svelte';
@@ -9,9 +10,28 @@
 		icon: string;
 		condition?: () => boolean;
 	}[];
+	let screenWidth = 0;
+	export let expanded = false;
 
-	export let expanded = true;
+	if (browser) {
+		screenWidth = window.innerWidth;
+		if (screenWidth < 768) {
+			expanded = false;
+		} else {
+			expanded = true;
+		}
+	}
 </script>
+
+<svelte:window on:resize={() => (screenWidth = window.innerWidth)} />
+
+{#if screenWidth < 768}
+	{#if expanded}
+		<script>
+			expanded = false;
+		</script>
+	{/if}
+{/if}
 
 <nav
 	class="h-full bg-gray-950 text-gray-100
@@ -24,9 +44,11 @@
 >
 	<div class="flex w-full items-center justify-center gap-6">
 		{#if expanded}
-			<img src="/favicon.png" alt="Logo" class="w-16" />
+			<a href="/">
+				<img src="/favicon.png" alt="Logo" class="w-16" />
+			</a>
 		{/if}
-		<button class="text-gray-200 hoverable" on:click={() => (expanded = !expanded)}>
+		<button class="text-gray-200 hoverable mt-4" on:click={() => (expanded = !expanded)}>
 			<Icon icon={expanded ? 'segment' : 'menu'} />
 		</button>
 	</div>

@@ -15,7 +15,7 @@
 		<div class="flex flex-col ml-2">
 			<p class="text-gray-200 text-sm">{video.title}</p>
 			<span class="flex flex-col justify-between items-start">
-				<p class="text-gray-200 text-xs">{video.youtubeChannel}</p>
+				<p class="text-gray-200 text-xs mt-2">{video.youtubeChannel}</p>
 				<p class="text-gray-200 text-xs">
 					{dayjs.duration(video.duration, 's').format('HH:mm:ss')}
 				</p>

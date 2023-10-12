@@ -93,7 +93,7 @@
 			schedule.length > 0
 				? `https://www.youtube.com/embed/${schedule[0].videoId}?start=${
 						timeSinceWeekStart() - schedule[0].startTime
-				  }&rel=0&controls=1&autoplay=1&mute=0&enablejsapi=1`
+				  }&rel=0&controls=1&autoplay=1&mute=0&enablejsapi=1&allowfullscreen=1`
 				: '';
 	};
 
@@ -144,8 +144,8 @@
 		<iframe
 			src={currentVideoUrl}
 			frameborder="0"
-			allow="autoplay; encrypted-media;"
-			allowfullscreen
+			allow="autoplay; encrypted-media; fullscreen"
+			allowfullscreen={true}
 			title="Embedded youtube"
 			class="w-full h-full"
 			bind:this={frame}

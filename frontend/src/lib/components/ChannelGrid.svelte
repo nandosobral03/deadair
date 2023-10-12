@@ -19,25 +19,17 @@
 			size: 'lg'
 		});
 	};
-
-	const handleSelect = (channel: any) => {
-		if (allowCreate) {
-			window.location.href = `/channel/${channel.channelNumber}`;
-		} else {
-			if (type == 'sharedChannels') {
-				window.location.href = `/browse/shared/${channel.id}`;
-			} else {
-				window.location.href = `/browse/${channel.channelNumber}`;
-			}
-		}
-	};
 </script>
 
 <div class="channel-grid w-full h-full">
 	{#each $channelStore[type] as channel}
-		<button
-			on:click={() => handleSelect(channel)}
-			class="bg-primary w-full h-64 relative flex flex-col items-start justify-end gap-2 straight-shadow
+		<a
+			href={allowCreate
+				? `/channel/${channel.channelNumber}`
+				: type == 'sharedChannels'
+				? `/browse/shared/${channel.id}`
+				: `/browse/${channel.channelNumber}`}
+			class="bg-primary w-full aspect-square max-h-64 relative flex flex-col items-start justify-end gap-2 straight-shadow
             hoverable"
 		>
 			<div class="grow items-center justify-center w-full relative">
@@ -55,16 +47,16 @@
 				<Divider />
 				<span class="text-gray-800 text-xs">{channel.description} </span>
 			</span>
-		</button>
+		</a>
 	{/each}
 	{#if allowCreate}
 		<button
 			on:click={() => createChannel()}
-			class="bg-primary w-full h-64 relative flex flex-col items-center justify-center straight-shadow
+			class="bg-primary w-full max-h-64 aspect-square relative flex flex-col items-center justify-center straight-shadow
 	hoverable"
 		>
 			<div>
-				<Icon icon="add" className="text-gray-800 text-8xl" />
+				<Icon icon="add" className="text-gray-800 lg:text-8xl text-6xl" />
 			</div>
 		</button>
 	{/if}
@@ -78,6 +70,14 @@
 		grid-gap: 1rem;
 	}
 
+	@media (max-width: 768px) {
+		.channel-grid {
+			grid-template-columns: repeat(auto-fill, minmax(4rem, 2fr));
+			grid-template-rows: repeat(auto-fill, 6rem);
+			grid-gap: 0.5rem;
+		}
+	}
+
 	button {
 		> span {
 			transition: height 0.2s ease-in-out;
@@ -85,7 +85,12 @@
 	}
 	button:hover {
 		> span {
-			height: 200px !important;
+			height: 50px !important;
+		}
+		@media (min-width: 768px) {
+			> span {
+				height: 200px !important;
+			}
 		}
 	}
 </style>

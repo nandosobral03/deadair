@@ -60,7 +60,7 @@
 	});
 </script>
 
-<div class="flex flex-col gap-4 overflow-y-auto" use:autoAnimate={{ duration: 100 }}>
+<div class="flex flex-col gap-4 md:overflow-y-auto" use:autoAnimate={{ duration: 100 }}>
 	<div
 		class="flex flex-row p-2 rounded-md relative bg-primary mx-4 straight-shadow"
 		use:autoAnimate={{ duration: 100 }}

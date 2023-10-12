@@ -68,9 +68,8 @@
 </script>
 
 <header
-	class="w-full flex max-h-96 h-96 bg-gray-950 items-start justify-start
- p-3 relative rounded-md"
-	style="height: 30vh;"
+	class="w-full flex md:max-h-96 bg-gray-950 md:items-start md:justify-start
+ p-3 relative rounded-md md:flex-row flex-col gap-4 h-fit md:h-72 max-h"
 >
 	<button
 		class="text-primary w-8 h-8
@@ -79,7 +78,7 @@
 	>
 		<Icon icon="arrow_back" className="text-2xl" />
 	</button>
-	<div class="flex gap-4 absolute top-6 right-6">
+	<div class="flex gap-4 absolute md:top-6 bottom-6 right-6">
 		{#if showUsers}
 			<a
 				class="text-primary w-8 h-8 rounded-full flex items-center justify-center hoverable"
@@ -110,7 +109,7 @@
 		{/if}
 	</div>
 
-	<div class="h-full max-w-3xl aspect-square p-4">
+	<div class="h-full aspect-square p-4 max-h-48 md:max-h-full md:max-w-3xl">
 		{#if browser}
 			<img
 				class="object-cover h-full w-full place-content-start rounded-md"
@@ -120,8 +119,10 @@
 			/>
 		{/if}
 	</div>
-	<Divider vertical class="bg-primary mx-6" />
-	<div class="flex flex-col gap-2 flex-grow h-full p-6 justify-between">
+	{#if browser}
+		<Divider class="bg-primary mx-6 w-11/12 md:w-px" vertical={window.innerWidth > 768} />
+	{/if}
+	<div class="flex flex-col gap-2 flex-grow md:h-full p-6 justify-between">
 		<div class="flex flex-col gap-2">
 			<h1 class="text-4xl text-primary opacity-100">{channel.name}</h1>
 			<p class="text-gray-200 overflow-y-auto h-24">
