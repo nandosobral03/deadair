@@ -8,6 +8,7 @@
 		name: string;
 		path: string;
 		icon: string;
+		highlightPaths?: string[];
 		condition?: () => boolean;
 	}[];
 	let screenWidth = 0;
@@ -20,6 +21,7 @@
 		} else {
 			expanded = true;
 		}
+		console.log($page.url.pathname.split('/'));
 	}
 </script>
 
@@ -57,9 +59,12 @@
 		{#each routes.filter((route) => !route.condition || route.condition()) as route}
 			<a
 				class="flex items-center p-2 hover:bg-gray-700 cursor-pointer rounded-md transition-all duration-200 ease-in-out"
-				class:bg-primary-dim={$page.url.pathname === `${route.path}`}
-				class:text-gray-800={$page.url.pathname === `${route.path}`}
+				class:bg-primary-dim={$page.url.pathname === `${route.path}` ||
+					route.highlightPaths?.includes($page.url.pathname.split('/')[1])}
+				class:text-gray-100={$page.url.pathname === `${route.path}` ||
+					route.highlightPaths?.includes($page.url.pathname.split('/')[1])}
 				class:px-auto={!expanded}
+				class:justify-center={!expanded}
 				href={route.path}
 			>
 				<Icon icon={route.icon} />

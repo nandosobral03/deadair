@@ -3,6 +3,7 @@
 	import dayjs from 'dayjs';
 	import Icon from './Icon.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { browser } from '$app/environment';
 	export let item: ScheduleCreate;
 	export let showDelete: boolean = false;
 	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -15,6 +16,9 @@
 	const getStartTime = (seconds: number) => {
 		const duration = dayjs.duration(seconds, 's');
 		let day = duration.days() % 7;
+		if (browser && window.innerWidth < 768) {
+			return `${days[day].slice(0, 3)} ${duration.format('HH:mm')}`;
+		}
 		return `${days[day]} ${duration.format('HH:mm')}`;
 	};
 </script>
@@ -30,14 +34,14 @@
 		<div class="flex flex-col flex-grow max-w-full overflow-x-hidden h-full gap-1 w-full">
 			<!-- max 1 line otherwise ... -->
 			<p
-				class="text-gray-200 w-10/12 text-lg overflow-hidden overflow-ellipsis whitespace-nowrap mx-auto md:mx-0"
+				class="text-gray-200 w-11/12 text-sm md:text-lg overflow-hidden overflow-ellipsis whitespace-nowrap mx-auto md:mx-0"
 			>
 				{item.title}
 			</p>
-			<p class="text-gray-200 w-10/12 text-sm mx-auto md:mx-0">
+			<p class="text-gray-200 w-11/12 text-xs md:text-sm mx-auto md:mx-0">
 				{dayjs.duration(item.duration, 's').format('HH:mm:ss')}
 			</p>
-			<p class="text-gray-400 text-sm self-end w-fit">
+			<p class="text-gray-400 text-xs self-end w-fit">
 				{`${getStartTime(item.startTime)} - ${getStartTime(item.startTime + item.duration)}`}
 			</p>
 		</div>

@@ -3,6 +3,7 @@
 	import dayjs, { duration } from 'dayjs';
 	import Icon from './Icon.svelte';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	export let item: ScheduleCreate;
 	export let showDelete: boolean = false;
 	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -15,6 +16,9 @@
 	const getStartTime = (seconds: number) => {
 		const duration = dayjs.duration(seconds, 's');
 		let day = duration.days();
+		if (browser && window.innerWidth < 768) {
+			return `${days[day].slice(0, 3)} ${duration.format('HH:mm')}`;
+		}
 		return `${days[day]} ${duration.format('HH:mm')}`;
 	};
 
@@ -39,7 +43,7 @@
 
 <div class="flex flex-row items-center justify-between w-full h-fit p-2 gap-6 relative">
 	{#if showDelete}
-		<button class="absolute top-2 right-2 text-gray-800 hoverable" on:click={handleDelete}>
+		<button class="absolute top-2 right-2 text-gray-100 hoverable" on:click={handleDelete}>
 			<Icon icon="close" />
 		</button>
 	{/if}
@@ -47,16 +51,16 @@
 		<img class="w-32 rounded-md" src={item.thumbnail} alt={item.videoId} />
 		<div class="flex flex-col w-full h-full gap-1">
 			<p
-				class="text-gray-800 w-10/12 text-lg overflow-hidden overflow-ellipsis whitespace-nowrap mx-auto md:mx-0"
+				class="text-gray-100 w-11/12 text-sm md:text-lg overflow-hidden overflow-ellipsis whitespace-nowrap mx-auto md:mx-0"
 			>
 				{item.title}
 			</p>
-			<p class="text-gray-800 w-10/12 mx-auto text-sm md:mx-0">
+			<p class="text-gray-100 w-11/12 mx-auto text-xs md:text-sm md:mx-0">
 				{dayjs.duration(currentTime, 's').format('HH:mm:ss')}
 				/
 				{dayjs.duration(item.duration, 's').format('HH:mm:ss')}
 			</p>
-			<p class="text-gray-800 text-sm self-end w-fit">
+			<p class="text-gray-100 text-xs self-end w-fit">
 				{`${getStartTime(item.startTime)} - ${getStartTime(item.startTime + item.duration)}`}
 			</p>
 		</div>

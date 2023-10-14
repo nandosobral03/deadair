@@ -9,12 +9,12 @@
 	let showChat = false;
 </script>
 
-<div class="flex flex-col lg:flex-row gap-4 bg-gray-850 rounded-lg p-4 w-full h-full relative">
+<div class="flex flex-col lg:flex-row gap-4 bg-gray-850 rounded-md p-4 w-full h-full relative">
 	<button
-		class="absolute top-2 right-2 text-gray-200 hoverable z-20"
+		class="absolute top-2 right-2 text-gray-200 hoverable z-20 bg-primary p-2 rounded-md flex items-center justify-center"
 		on:click={() => (showChat = !showChat)}
 	>
-		<Icon icon={showChat ? 'close' : 'chat'} />
+		<Icon icon={showChat ? 'comments_disabled' : 'chat'} />
 	</button>
 	<WatchChannel originalSchedule={data.schedule} channelName={data.channel.name} />
 	{#if showChat}

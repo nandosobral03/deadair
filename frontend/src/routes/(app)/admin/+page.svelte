@@ -6,5 +6,7 @@
 	channelStore.set(data.channels);
 </script>
 
-<h1 class="text-xl text-primary">Public Channels</h1>
-<ChannelGrid type="publicChannels" allowCreate />
+<div class="flex flex-col gap-4 bg-gray-850 rounded-md md:p-4">
+	<h1 class="text-xl text-gray-100">Public Channels</h1>
+	<ChannelGrid type="publicChannels" allowCreate />
+</div>

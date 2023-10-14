@@ -85,7 +85,7 @@
 				disabled={!token}
 			/>
 			<button
-				class="bg-primary hover:bg-primary-hover text-gray-800 py-2 px-4 rounded"
+				class="bg-primary hover:bg-primary-hover text-gray-100 py-2 px-4 rounded"
 				type="submit"
 				disabled={!token}
 			>

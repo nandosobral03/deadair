@@ -23,7 +23,7 @@
 
 	<style>
 		:root {
-			--primary: #fead89;
+			--primary: #ff514e;
 		}
 
 		html,
@@ -43,6 +43,10 @@
 			box-shadow: 4px 4px 0px 2px rgba(0, 0, 0, 1);
 		}
 
+		.white-straight-shadow {
+			box-shadow: 4px 4px 0px 2px rgba(255, 255, 255, 1) !important;
+		}
+
 		.hoverable {
 			span {
 				transition: all 0.2s ease-in-out;
@@ -52,6 +56,27 @@
 				transform: scale(1.02);
 				cursor: pointer;
 				filter: brightness(1.1);
+			}
+		}
+
+		@media (max-width: 768px) {
+			/* Works on Firefox */
+			* {
+				scrollbar-width: thin;
+				scrollbar-color: var(--primary) transparent;
+			}
+
+			/* Works on Chrome, Edge, and Safari */
+			*::-webkit-scrollbar {
+				display: none;
+			}
+
+			*::-webkit-scrollbar-track {
+				display: none;
+			}
+
+			*::-webkit-scrollbar-thumb {
+				display: none;
 			}
 		}
 

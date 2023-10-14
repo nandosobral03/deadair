@@ -39,7 +39,7 @@
 
 <div
 	class="w-full h-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden items-center justify-center
-	bg-gradient-to-br to-red-200 from-primary relative
+	bg-gradient-to-br to-red-400 from-primary relative
 	"
 >
 	<div class="flex justify-center items-center absolute top-12 right-12">
@@ -64,7 +64,7 @@
 	</div>
 
 	{#if type == 'login'}
-		<div class="w-96 bg-gray-900 rounded-lg shadow-lg p-6 flex flex-col gap-4 straight-shadow">
+		<div class="w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow">
 			<h3 class="text-2xl text-white">Login</h3>
 
 			<div class="flex flex-col gap-2">
@@ -82,14 +82,14 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<button class="bg-primary text-white rounded-lg p-2 hover:bg-primary-hover"> Login </button>
+				<button class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover"> Login </button>
 			</div>
 
 			<Divider />
 			<button class="text-white text-left" on:click={changeModal}>Don't have an account?</button>
 		</div>
 	{:else}
-		<div class="w-96 bg-gray-900 rounded-lg shadow-lg p-6 flex flex-col gap-4 straight-shadow">
+		<div class="w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow">
 			<h3 class="text-2xl text-white hover:text-primary-hover">Sign up</h3>
 
 			<div class="flex flex-col gap-2">
@@ -107,7 +107,7 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<button class="bg-primary text-white rounded-lg p-2 hover:bg-primary-hover">
+				<button class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover">
 					Sign Up
 				</button>
 			</div>

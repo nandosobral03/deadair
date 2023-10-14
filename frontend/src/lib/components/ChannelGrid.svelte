@@ -42,10 +42,16 @@
 					/>
 				{/if}
 			</div>
-			<span class="text-gray-800 z-10 h-8 text-sm overflow-hidden w-full text-left px-4">
-				{channel.name}
+			<span
+				class="text-gray-100 z-10 h-8 text-xs md:text-lg overflow-hidden w-full px-4 flex flex-col gap-1"
+			>
+				<span class="text-left whitespace-nowrap overflow-ellipsis">
+					{channel.name}
+				</span>
 				<Divider />
-				<span class="text-gray-800 text-xs">{channel.description} </span>
+				<span class="text-gray-100 text-xs invisible md:visible h-full md:text-base">
+					{channel.description}
+				</span>
 			</span>
 		</a>
 	{/each}
@@ -56,7 +62,7 @@
 	hoverable"
 		>
 			<div>
-				<Icon icon="add" className="text-gray-800 lg:text-8xl text-6xl" />
+				<Icon icon="add" className="text-gray-100 lg:text-8xl text-6xl" />
 			</div>
 		</button>
 	{/if}
@@ -72,18 +78,18 @@
 
 	@media (max-width: 768px) {
 		.channel-grid {
-			grid-template-columns: repeat(auto-fill, minmax(4rem, 2fr));
-			grid-template-rows: repeat(auto-fill, 6rem);
+			grid-template-columns: repeat(auto-fill, minmax(6rem, 2fr));
+			grid-template-rows: repeat(auto-fill, 8rem);
 			grid-gap: 0.5rem;
 		}
 	}
 
-	button {
+	a {
 		> span {
 			transition: height 0.2s ease-in-out;
 		}
 	}
-	button:hover {
+	a:hover {
 		> span {
 			height: 50px !important;
 		}

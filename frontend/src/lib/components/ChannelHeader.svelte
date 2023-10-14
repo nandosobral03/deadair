@@ -13,13 +13,13 @@
 	export let userId: string | undefined;
 	export let allowEdit = false;
 	export let channel: Channel;
-	export let showUsers = true;
+	export let showUsers = channel.userId ? true : false;
 	const handleError = (ev: any) => (ev.target.src = '/placeholder.svg');
 
 	const handleShare = () => {
 		modalStore.set({
 			title: 'Share Channel',
-			size: 'sm', // 'sm' | 'md' | 'lg' | 'xl
+			size: 'md', // 'sm' | 'md' | 'lg' | 'xl
 			component: ShareChannelModal,
 			props: {
 				channel
@@ -78,7 +78,7 @@
 	>
 		<Icon icon="arrow_back" className="text-2xl" />
 	</button>
-	<div class="flex gap-4 absolute md:top-6 bottom-6 right-6">
+	<div class="flex gap-4 absolute top-6 right-6">
 		{#if showUsers}
 			<a
 				class="text-primary w-8 h-8 rounded-full flex items-center justify-center hoverable"
@@ -86,13 +86,14 @@
 			>
 				<Icon icon="people" className="text-2xl" />
 			</a>
+			<button
+				class="text-primary w-8 h-8 rounded-full flex items-center justify-center hoverable"
+				on:click={handleShare}
+			>
+				<Icon icon="share" className="text-2xl" />
+			</button>
 		{/if}
-		<button
-			class="text-primary w-8 h-8 rounded-full flex items-center justify-center hoverable"
-			on:click={handleShare}
-		>
-			<Icon icon="share" className="text-2xl" />
-		</button>
+
 		{#if allowEdit}
 			<button
 				class="text-primary w-8 h-8 rounded-full flex items-center justify-center hoverable"
@@ -119,19 +120,19 @@
 			/>
 		{/if}
 	</div>
-	{#if browser}
-		<Divider class="bg-primary mx-6 w-11/12 md:w-px" vertical={window.innerWidth > 768} />
+	{#if browser && window.innerWidth > 768}
+		<Divider class="bg-primary mx-6 md:w-px" vertical />
 	{/if}
 	<div class="flex flex-col gap-2 flex-grow md:h-full p-6 justify-between">
 		<div class="flex flex-col gap-2">
-			<h1 class="text-4xl text-primary opacity-100">{channel.name}</h1>
-			<p class="text-gray-200 overflow-y-auto h-24">
+			<h1 class="text-xl text-primary opacity-100 md:text-4xl">{channel.name}</h1>
+			<p class="text-gray-200 overflow-y-auto h-24 text-sm">
 				{channel.description}
 			</p>
 		</div>
 		{#if allowWatch}
 			<a
-				class="flex items-center justify-center bg-primary rounded-md w-48 h-12 py-6 text-gray-800"
+				class="flex items-center justify-center bg-primary rounded-md w-auto md:w-48 h-12 py-6 text-gray-100 hover:bg-primary-hover"
 				href={getWatchUrl()}
 			>
 				Watch Now

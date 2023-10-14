@@ -8,6 +8,7 @@
 	import { tokenStore } from '$lib/stores/token.store';
 	import { toastStore } from '$lib/stores/toast.store';
 	import { parseHTTPError } from '$lib/utils/error';
+	import Empty from '$lib/components/Empty.svelte';
 
 	export let data: PageServerData & LayoutServerData;
 	const payload = data.payload!;
@@ -42,7 +43,9 @@
 />
 
 {#if data.users.length == 0}
-	<span class="text-white">No users found </span>
+	<div class="h-1/2">
+		<Empty message="No users in channel share it with your friends!" image="/empty-users.png" />
+	</div>
 {/if}
 
 {#each data.users as user}

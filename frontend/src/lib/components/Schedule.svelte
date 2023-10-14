@@ -20,17 +20,25 @@
 	import Toggle from './Toggle.svelte';
 	import autoAnimate from '@formkit/auto-animate';
 	import Icon from './Icon.svelte';
+	import fuzzysearch from 'fuzzysearch';
+	import Empty from './Empty.svelte';
+
 	let showScheduledVal: 'on' | 'off' = 'off';
 	$: showScheduled = showScheduledVal === 'on';
 	let randomizeWeeklyVal: boolean = channel.randomize;
-
+	let videoQuery = '';
 	let shownVideos: Video[] = videos;
+
 	$: {
-		console.log(showScheduled);
+		let results = videos
+			.filter((v) => fuzzysearch(videoQuery.toLowerCase(), v.title.toLocaleLowerCase()))
+			.map((v) => v.id);
 		if (!showScheduled) {
-			shownVideos = videos.filter((v) => !schedule.find((s) => s.videoId === v.id));
+			shownVideos = videos.filter(
+				(v) => !schedule.find((s) => s.videoId === v.id) && results.includes(v.id)
+			);
 		} else {
-			shownVideos = videos;
+			shownVideos = videos.filter((v) => results.includes(v.id));
 		}
 	}
 
@@ -59,7 +67,6 @@
 			};
 		});
 		try {
-			console.log(channel);
 			await putScheduleAPI(
 				items,
 				channel.id,
@@ -134,9 +141,9 @@
 		use:autoAnimate={{ duration: 100 }}
 		class="flex flex-col w-3/4 mx-auto overflow-y-scroll h-full gap-4 relative px-4 overflow-x-hidden"
 	>
-		<div class="w-full flex gap-2">
+		<div class="w-full flex gap-2 h-1/10 select-none">
 			<button
-				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 flex-grow"
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-100 flex-grow"
 				on:click={() => {
 					handleSave(schedule);
 				}}
@@ -154,14 +161,14 @@
 				{/if}
 			</button>
 			<button
-				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 aspect-square grid place-items-center"
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-100 aspect-square grid place-items-center"
 				on:click={randomizeSchedule}
 			>
 				<Icon icon="casino" />
 			</button>
 
 			<button
-				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 aspect-square grid place-items-center"
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-100 aspect-square grid place-items-center"
 				on:click={() => {
 					schedule = [];
 				}}
@@ -171,12 +178,11 @@
 		</div>
 
 		{#if schedule.length == 0}
-			<div class="text-gray-200 h-full text-center flex flex-col justify-center items-center">
-				<img src="/empty.png" alt="Placeholder" class="w-1/2 mx-auto" />
-				<p>No schedule items yet! Add one by dragging a video from the sidebar.</p>
+			<div class="h-5/6">
+				<Empty message="No scheduled videos yet! Add one by dragging a video from the sidebar." />
 			</div>
 			<div
-				class="flex flex-row h-9/10 rounded-md absolute z-10 w-full bottom-0"
+				class="flex flex-row rounded-md absolute z-10 w-full bottom-10 h-4/5"
 				use:dropzone={{
 					on_dropzone: handleDrop(-1)
 				}}
@@ -223,7 +229,7 @@
 	<div class="flex flex-col w-1/4 gap-2 mx-4">
 		<div class="flex w-full gap-4">
 			<button
-				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center grid place-items-center"
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-100 text-center grid place-items-center"
 				on:click={() => {
 					const toAdd = videos.map((v) => {
 						return {
@@ -248,24 +254,40 @@
 			</button>
 			<a
 				href="/channel/{channel.channelNumber}/videos"
-				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-800 text-center flex-grow
+				class="bg-primary rounded-md p-2 hover:bg-primary-hover text-gray-100 text-center flex-grow
 			
 			">Manage videos</a
 			>
 		</div>
 		<Divider />
-		<div class="flex">
-			<label for="show-scheduled" class="text-gray-200 text-sm">Show already scheduled videos</label
-			>
-			<Toggle bind:value={showScheduledVal} label="" design="slider" fontSize={12} />
+		<div class="flex justify-end items-center first-letter gap-4">
+			<input
+				bind:value={videoQuery}
+				type="text"
+				placeholder="Search "
+				class="border-2 w-full
+					 border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300"
+			/>
+			<div class="flex flex-col flex-shrink-0 gap-1 items-center">
+				<label for="show-scheduled" class="text-gray-200 text-sm flex-shrink-0 w-full"
+					>Scheduled</label
+				>
+				<Toggle bind:value={showScheduledVal} label="" design="slider" fontSize={12} />
+			</div>
 		</div>
-		{#if videos.length == 0}
-			<p class="text-gray-200">No videos yet! Manage this channel's videos</p>
-		{/if}
-		<div class="flex flex-col gap-2 overflow-y-scroll h-full">
+		<div class="flex flex-col gap-2 overflow-y-scroll h-full overflow-x-hidden">
 			{#each shownVideos as video}
 				<VideoPreview {video} />
 			{/each}
+			{#if videos.length == 0}
+				<div class="h-1/2 my-auto text-center">
+					<Empty
+						message="No videos found <br> Go to the manage 
+					 videos page to add some."
+						image="/empty-video.png"
+					/>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

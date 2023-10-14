@@ -9,6 +9,7 @@
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.store';
 	import SleepingModal from '$lib/modals/Sleeping.modal.svelte';
+	import Empty from './Empty.svelte';
 	let shown = true;
 	let frame: HTMLIFrameElement;
 	let upcomingVideo: ScheduleGet | null = null;
@@ -138,7 +139,7 @@
 </svelte:head>
 
 {#if schedule.length == 0}
-	<div class="text-center text-white w-full h-full relative">No videos scheduled</div>
+	<Empty message="No videos are scheduled in this channel, how did you even get here?" />
 {:else if shown}
 	<div class="w-full h-full relative">
 		<iframe
@@ -159,8 +160,8 @@
 		</button>
 		{#if upcomingVideo}
 			<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
-				<div class="bg-gray-950 bg-opacity-80 rounded-lg p-4 flex gap-4">
-					<img src={upcomingVideo.thumbnail} class="w-32 h-24 rounded-lg" alt="" />
+				<div class="bg-gray-950 bg-opacity-80 rounded-md p-4 flex gap-4">
+					<img src={upcomingVideo.thumbnail} class="w-32 h-24 rounded-md" alt="" />
 					<div class="flex flex-col gap-1 flex-grow">
 						<span class="text-primary text-md"> Up next: </span>
 						<div class="text-white text-sm">

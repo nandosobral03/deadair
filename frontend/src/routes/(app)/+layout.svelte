@@ -12,17 +12,20 @@
 		name: string;
 		path: string;
 		icon: string;
+		highlightPaths?: string[];
 		condition?: () => boolean;
 	}[] = [
 		{
 			name: 'Browse',
 			path: '/browse',
-			icon: 'browse'
+			icon: 'browse',
+			highlightPaths: ['browse', 'watch']
 		},
 		{
 			name: 'Channels',
 			path: '/channels',
 			icon: 'display_settings',
+			highlightPaths: ['channel'],
 			condition: () => !!data.token
 		},
 		{
@@ -40,7 +43,7 @@
 </svelte:head>
 <div class="w-full h-full flex bg-transparent relative">
 	<Sidebar {routes} />
-	<div class="h-full w-full flex flex-col p-4 gap-4 bg-background relative overflow-y-auto">
+	<div class="h-full w-full flex flex-col p-2 md:p-4 gap-4 bg-background relative overflow-y-auto">
 		<slot />
 	</div>
 	<Modal />
@@ -58,7 +61,7 @@
 			}}
 			role="dialog"
 		>
-			<div class="rounded-lg p-4 flex flex-col gap-4">
+			<div class="rounded-md p-2 md:p-4 flex flex-col gap-4">
 				<div class="text-center text-2xl text-primary">Sleeping</div>
 				<div class="text-center text-sm text-primary">Click anywhere to wake up</div>
 			</div>

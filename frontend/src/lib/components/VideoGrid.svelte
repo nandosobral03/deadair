@@ -7,14 +7,29 @@
 	import Icon from './Icon.svelte';
 	import { tokenStore } from '$lib/stores/token.store';
 	import type { Channel } from '$lib/model/channel.model';
+	import { toastStore } from '$lib/stores/toast.store';
+	import { parseHTTPError } from '$lib/utils/error';
 	dayjs.extend(duration);
 	export let channel: Channel;
 
 	$: videos = $videoStore.get(channel.id) || [];
 	const handleError = (ev: any) => (ev.target.src = '/placeholder.svg');
 
-	const handleRemoveVideo = (id: string) => {
-		removeVideoFromChannel(channel.id, id, $tokenStore!, channel.userId ? 'user' : 'public');
+	const handleRemoveVideo = async (id: string) => {
+		try {
+			await removeVideoFromChannel(
+				channel.id,
+				id,
+				$tokenStore!,
+				channel.userId ? 'user' : 'public'
+			);
+		} catch (e) {
+			toastStore.addToast({
+				text: parseHTTPError(e, "Couldn't remove video from channel"),
+				title: 'Error',
+				type: 'error'
+			});
+		}
 	};
 </script>
 
@@ -34,20 +49,25 @@
 					/>
 				{/if}
 			</div>
-			<span class="text-gray-900 z-10 h-8 text-md overflow-hidden w-full text-left px-4">
+			<button
+				class="absolute p-px rounded-md flex items-center content-center top-0 right-0 bg-primary scale-50 invisible"
+				on:click={() => handleRemoveVideo(video.id)}
+			>
+				<Icon icon="close" />
+			</button>
+			<span
+				class="text-gray-100 z-10 h-8 text-xs md:text-md overflow-hidden w-full text-left px-4 whitespace-nowrap overflow-ellipsis"
+			>
 				{video.title}
 				<Divider color="gray-800" class="my-1" />
 				<div class="flex flex-col gap-px justify-around flex-grow relative">
-					<span class="text-gray-800 text-xs">By: {video.youtubeChannel} </span>
-					<span class="text-gray-800 text-xs">
+					<span class="text-gray-100 text-xs">By: {video.youtubeChannel} </span>
+					<span class="text-gray-100 text-xs">
 						Duration: {dayjs.duration(video.duration, 'seconds').format('HH:mm:ss')}
 					</span>
-					<span class="text-gray-800 text-xs mt-2">
+					<span class="text-gray-100 text-xs mt-2">
 						{video.category}
 					</span>
-					<button class="absolute -bottom-8 right-0" on:click={() => handleRemoveVideo(video.id)}>
-						<Icon icon="close" />
-					</button>
 				</div>
 			</span>
 		</div>
@@ -62,7 +82,7 @@
 		grid-gap: 1rem;
 	}
 
-	@media (min-width: 768px) {
+	@media (max-width: 768px) {
 		.channel-grid {
 			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
 			grid-template-rows: repeat(auto-fill, 16rem);
@@ -78,6 +98,10 @@
 	.hoverable:hover {
 		> span {
 			height: 10rem !important;
+		}
+
+		> button {
+			visibility: visible !important;
 		}
 	}
 </style>

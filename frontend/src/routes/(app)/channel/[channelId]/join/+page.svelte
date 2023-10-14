@@ -41,7 +41,7 @@
 			You are about to join <span class="text-primary">{title}</span>
 		</span>
 
-		<button class="bg-primary text-gray-950 rounded-md p-2 w-full" on:click={handleJoin}>
+		<button class="bg-primary text-gray-100 rounded-md p-2 w-full" on:click={handleJoin}>
 			Join
 		</button>
 	</div>

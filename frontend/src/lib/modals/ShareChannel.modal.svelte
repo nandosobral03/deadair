@@ -19,12 +19,12 @@
 		Anyone with this link can join <b>{channel.name}</b> and watch it's scheduled content.
 	</span>
 
-	<a href="/channel/{channel.id}/join?title={channel.name}" class="rounded-lg p-4 text-center">
+	<a href="/channel/{channel.id}/join?title={channel.name}" class="rounded-md p-4 text-center">
 		<span class="text-primary break-all hover:text-primary-hover hover:underline">
 			{location.host}/channel/{channel.id}/join?title={channel.name}
 		</span>
 	</a>
-	<button class="rounded-lg p-4 text-center bg-primary" on:click={handleCopy}>
+	<button class="rounded-md p-4 text-center bg-primary" on:click={handleCopy}>
 		Copy to clipboard
 	</button>
 </div>
