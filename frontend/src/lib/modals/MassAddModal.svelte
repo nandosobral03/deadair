@@ -14,18 +14,19 @@
 		try {
 			id = videoUrl.split('v=')[1].split('&')[0];
 		} catch {
-			toastStore.addToast({
-				title: 'Error',
-				text: 'Please enter a valid YouTube URL',
-				type: 'error'
-			});
-			return;
+			// toastStore.addToast({
+			// 	title: 'Error',
+			// 	text: 'Please enter a valid YouTube URL',
+			// 	type: 'error'
+			// });
+			throw { url: videoUrl };
 		}
 		await addVideoToChannel(channelId, id, token!, type);
 	};
 
 	const massAdd = async () => {
 		let failed = 0;
+		let failedUrls = [];
 		loadingStore.setLoading(true);
 		const videosInTens = videos
 			.split('\n')
@@ -42,16 +43,35 @@
 		for (const ten of videosInTens) {
 			const results = await Promise.allSettled(ten.map((v) => addVideo(v)));
 			failed += results.filter((r) => r.status === 'rejected').length;
+			console.log(
+				failed,
+				results.filter((r) => r.status === 'rejected')
+			);
+			failedUrls.push(
+				...results
+					.filter((r) => r.status === 'rejected')
+					.filter((r) => (r as any).reason.url)
+					.map((r) => (r as any).reason.url)
+			);
 		}
 
-		toastStore.addToast({
-			title: 'Success',
-			text: `Added ${videos.split('\n').filter((v) => v !== '').length - failed} videos`,
-			type: 'success'
-		});
-
 		loadingStore.setLoading(false);
-		modalStore.clear();
+		if (failedUrls.length > 0) {
+			toastStore.addToast({
+				title: 'Error',
+				text: `Failed to add ${failed} videos, incorrectly parsed URLs are left on the text area`,
+				type: 'error'
+			});
+			videos = failedUrls.join('\n');
+		} else {
+			toastStore.addToast({
+				title: 'Success',
+				text: `Added ${videos.split('\n').filter((v) => v !== '').length - failed} videos`,
+				type: 'success'
+			});
+
+			modalStore.clear();
+		}
 	};
 </script>
 

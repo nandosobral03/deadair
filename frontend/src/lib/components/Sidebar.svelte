@@ -12,7 +12,7 @@
 		condition?: () => boolean;
 	}[];
 	let screenWidth = 0;
-	export let expanded = false;
+	export let expanded = true;
 
 	if (browser) {
 		screenWidth = window.innerWidth;

@@ -2,6 +2,9 @@
 	import Divider from '$lib/components/Divider.svelte';
 	import '../../app.postcss';
 	import TooltippedInput from '$lib/components/TooltippedInput.svelte';
+	import axios from 'axios';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import Cookies from 'js-cookie';
 	let type = 'login';
 	let form = {
 		username: {
@@ -30,6 +33,28 @@
 		type = type === 'login' ? 'signup' : 'login';
 		form.username.error = '';
 		form.password.error = '';
+	};
+
+	const login = async () => {
+		const response = await axios.post(`${PUBLIC_API_URL}/login`, {
+			username: form.username.value,
+			password: form.password.value
+		});
+		await axios.post(`/login`, {
+			token: response.data.token
+		});
+		window.location.href = '/browse';
+	};
+
+	const signUp = async () => {
+		const response = await axios.post(`${PUBLIC_API_URL}/register`, {
+			username: form.username.value,
+			password: form.password.value
+		});
+		await axios.post(`/login`, {
+			token: response.data.token
+		});
+		window.location.href = '/browse';
 	};
 </script>
 
@@ -82,7 +107,14 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<button class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover"> Login </button>
+				<button
+					class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover"
+					on:click={() => {
+						login();
+					}}
+				>
+					Login
+				</button>
 			</div>
 
 			<Divider />
@@ -107,7 +139,12 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<button class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover">
+				<button
+					class="bg-primary text-white rounded-md p-2 hover:bg-primary-hover"
+					on:click={() => {
+						signUp();
+					}}
+				>
 					Sign Up
 				</button>
 			</div>

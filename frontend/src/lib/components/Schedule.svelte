@@ -260,21 +260,23 @@
 			>
 		</div>
 		<Divider />
-		<div class="flex justify-end items-center first-letter gap-4">
-			<input
-				bind:value={videoQuery}
-				type="text"
-				placeholder="Search "
-				class="border-2 w-full
-					 border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300"
-			/>
-			<div class="flex flex-col flex-shrink-0 gap-1 items-center">
-				<label for="show-scheduled" class="text-gray-200 text-sm flex-shrink-0 w-full"
-					>Scheduled</label
-				>
-				<Toggle bind:value={showScheduledVal} label="" design="slider" fontSize={12} />
+		{#if videos.length > 0}
+			<div class="flex justify-end items-center first-letter gap-4">
+				<input
+					bind:value={videoQuery}
+					type="text"
+					placeholder="Search "
+					class="border-2 w-full
+			border-gray-100 border-opacity-5 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-transparent p-2 text-gray-300"
+				/>
+				<div class="flex flex-col flex-shrink-0 gap-1 items-center">
+					<label for="show-scheduled" class="text-gray-200 text-sm flex-shrink-0 w-full"
+						>Scheduled</label
+					>
+					<Toggle bind:value={showScheduledVal} label="" design="slider" fontSize={12} />
+				</div>
 			</div>
-		</div>
+		{/if}
 		<div class="flex flex-col gap-2 overflow-y-scroll h-full overflow-x-hidden">
 			{#each shownVideos as video}
 				<VideoPreview {video} />

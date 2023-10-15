@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { redirect } from '@sveltejs/kit';
 
 export type TokenPayload = {
     username: string;
@@ -7,7 +8,6 @@ export type TokenPayload = {
     exp: number;
     iat: number;
 }
-
 export function load({ route, cookies }) {
     const token = cookies.get('token');
     if (token) {

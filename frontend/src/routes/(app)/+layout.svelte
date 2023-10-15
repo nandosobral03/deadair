@@ -7,6 +7,7 @@
 	import { tokenStore } from '$lib/stores/token.store';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { sleepingStore } from '$lib/stores/sleeping.store';
+	import { onMount } from 'svelte';
 	export let data: LayoutServerData;
 	const routes: {
 		name: string;
@@ -35,6 +36,7 @@
 			condition: () => !!data.payload?.isAdmin
 		}
 	];
+
 	tokenStore.set(data.token);
 </script>
 

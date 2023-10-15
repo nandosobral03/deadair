@@ -6,18 +6,14 @@
 	import { tokenStore } from '$lib/stores/token.store';
 	import { joinChannelAPI } from '$lib/utils/channel';
 	import { parseHTTPError } from '$lib/utils/error';
-	const { channelId } = $page.params;
-	const title = $page.url.searchParams.get('title');
-	if (browser) {
-		if (!channelId || !title) {
-			window.location.href = '/channels';
-		}
-	}
-
+	import type { LayoutServerData } from '../../../$types';
+	import type { PageServerData } from './$types';
+	export let data: PageServerData & LayoutServerData;
+	console.log(data);
 	const handleJoin = async () => {
 		try {
 			loadingStore.setLoading(true);
-			await joinChannelAPI(channelId, $tokenStore!);
+			await joinChannelAPI(data.channel.id, $tokenStore!);
 			window.location.href = '/browse';
 		} catch (e) {
 			toastStore.addToast({
@@ -32,14 +28,25 @@
 	};
 </script>
 
-<div class="h-full w-full flex flex-col items-center justify-center">
+<div class="h-full w-full flex flex-col items-center justify-center p-4">
 	<div
-		class="flex flex-col items-center justify-center gap-4 bg-gray-950 p-12 rounded-md straight-shadow"
+		class="flex flex-col items-center justify-center gap-8 bg-gray-950 p-8 w-full md:w-1/2 rounded-md straight-shadow"
 	>
-		<h1 class="text-4xl text-primary opacity-100">Join a channel</h1>
-		<span class="text-gray-50">
-			You are about to join <span class="text-primary">{title}</span>
-		</span>
+		<h1 class="text-xl md:text-3xl text-primary opacity-100 text-center">Join Channel</h1>
+		<div class="flex flex-col md:flex-row gap-4 items-start p-4">
+			<div class="flex items-center justify-center w-48 h-full aspect-square">
+				<img src={data.channel.thumbnail} alt="Channel logo" class="w-48 h-24 rounded-md" />
+			</div>
+			<div class="flex flex-col gap-2">
+				<span class="text-gray-50">
+					You are about to join <span class="text-primary">{data.channel.name}</span>
+				</span>
+
+				<span class="text-gray-50 text-sm">
+					{data.channel.description}
+				</span>
+			</div>
+		</div>
 
 		<button class="bg-primary text-gray-100 rounded-md p-2 w-full" on:click={handleJoin}>
 			Join

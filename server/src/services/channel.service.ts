@@ -1,7 +1,8 @@
-import dayjs from 'dayjs';
-import { db } from '../database/db';
 import { ChannelInsert, ChannelUpdate } from '../database/types';
 import { CreateChannel, CreateSchedule } from '../models/channel.model';
+
+import dayjs from 'dayjs';
+import { db } from '../database/db';
 import { timeSinceWeekStart } from '../utils/time';
 import { ulid } from 'ulid'
 
@@ -96,8 +97,7 @@ export const getChannel = async (id: string, userId?: string) => {
         status: 404,
         message: 'Channel not found'
     }
-    if (await userCanSeeChannel(id, userId)) return channel;
-    else throw { status: 401, message: 'Unauthorized' }
+    return channel;
 }
 
 
