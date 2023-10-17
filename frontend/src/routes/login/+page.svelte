@@ -3,7 +3,7 @@
 	import '../../app.postcss';
 	import TooltippedInput from '$lib/components/TooltippedInput.svelte';
 	import axios from 'axios';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { PUBLIC_API_URL, PUBLIC_URL } from '$env/static/public';
 	import Cookies from 'js-cookie';
 	let type = 'login';
 	let form = {
@@ -73,7 +73,7 @@
 			data-client_id="621044643291-dras0q5a30536q2m5dok6aonqohkp456.apps.googleusercontent.com"
 			data-context="signin"
 			data-ux_mode="popup"
-			data-login_uri="http://localhost:5173/oauth"
+			data-login_uri="{PUBLIC_URL}/oauth"
 			data-auto_prompt="false"
 		/>
 
@@ -89,7 +89,9 @@
 	</div>
 
 	{#if type == 'login'}
-		<div class="w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow">
+		<div
+			class="w-4/5 md:w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow"
+		>
 			<h3 class="text-2xl text-white">Login</h3>
 
 			<div class="flex flex-col gap-2">
@@ -121,7 +123,9 @@
 			<button class="text-white text-left" on:click={changeModal}>Don't have an account?</button>
 		</div>
 	{:else}
-		<div class="w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow">
+		<div
+			class="w-4/5 md:w-96 bg-gray-900 rounded-md shadow-lg p-6 flex flex-col gap-4 straight-shadow"
+		>
 			<h3 class="text-2xl text-white hover:text-primary-hover">Sign up</h3>
 
 			<div class="flex flex-col gap-2">

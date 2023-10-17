@@ -122,11 +122,4 @@
 			justify-content: center;
 		}
 	}
-
-	.closed {
-		animation-name: close;
-		animation-duration: 0.3s;
-		animation-fill-mode: forwards;
-		animation-delay: 0s;
-	}
 </style>

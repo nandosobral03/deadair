@@ -134,9 +134,13 @@
 
 		<div class="flex gap-2 justify-end w-full">
 			{#if thumbnail}
-				<img src={URL.createObjectURL(thumbnail)} class="w-1/5 aspect-square m-auto" />
+				<img
+					src={URL.createObjectURL(thumbnail)}
+					class="w-1/5 aspect-square m-auto"
+					alt="thumbnail"
+				/>
 			{:else if channel.thumbnail}
-				<img src={channel.thumbnail} class="w-1/5 aspect-square m-auto" />
+				<img src={channel.thumbnail} class="w-1/5 aspect-square m-auto" alt="thumbnail" />
 			{/if}
 
 			<button
