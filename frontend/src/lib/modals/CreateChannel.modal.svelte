@@ -130,17 +130,17 @@
 			type="textarea"
 		/>
 
-		<div class="flex gap-2 justify-end w-full">
+		<div class="flex gap-8 md:gap-32 justify-end w-full">
 			{#if thumbnail}
 				<img
 					src={URL.createObjectURL(thumbnail)}
-					class="w-1/5 aspect-square m-auto"
+					class="w-16 h-16 md:w-32 md:h-32 object-cover rounded-md shadow-md"
 					alt="Thumbnail"
 				/>
 			{/if}
 
 			<button
-				class="w-64 bg-primary text-white rounded-md p-2 shadow-md hover:bg-primary-hover h-10"
+				class="w-64 bg-primary text-white rounded-md p-2 shadow-md hover:bg-primary-hover h-fit"
 				on:click={() => fileInput.click()}
 			>
 				Upload Thumbnail
@@ -153,4 +153,10 @@
 	>
 </div>
 
-<input type="file" class="hidden" bind:this={fileInput} on:change={handleFileInput} />
+<input
+	type="file"
+	class="hidden"
+	bind:this={fileInput}
+	on:change={handleFileInput}
+	accept="image/png"
+/>

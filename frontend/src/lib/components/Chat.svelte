@@ -10,10 +10,9 @@
 	let shouldScroll = true;
 	let messages: { message: string; username: string; color: string; timestamp: string }[] = [];
 	onMount(() => {
-		const wsRoute = `${PUBLIC_API_URL.replace('http', 'ws').replace(
-			'api',
-			'ws'
-		)}/channel/${channel}`;
+		const wsRoute = `${PUBLIC_API_URL.replaceAll('api', 'ws')
+			.replace('ws', 'api')
+			.replace('http', 'ws')}/channel/${channel}`;
 
 		socket = new WebSocket(wsRoute);
 		socket.onopen = () => {
@@ -55,7 +54,7 @@
 			</button>
 		{/if}
 		{#each messages as message}
-			<div class="text-white hover:bg-gray-100 hover:bg-opacity-5 rounded-md px-4 py-2">
+			<div class="text-white hover:bg-gray-100 hover:bg-opacity-5 rounded-md px-4 py-2 break-words">
 				<span style={`color: ${message.color}`}>
 					{message.username}
 				</span>

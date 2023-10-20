@@ -10,7 +10,7 @@
 	import type { LayoutServerData } from '../../../$types';
 	import { modalStore } from '$lib/stores/modal.store';
 	import MassAddModal from '$lib/modals/MassAddModal.svelte';
-	import AddPlaylist from '$lib/modals/AddPlaylist.model.svelte';
+	import AddPlaylist from '$lib/modals/AddPlaylist.modal.svelte';
 	export let data: PageServerData & LayoutServerData;
 	let videoUrl: string = '';
 	videoStore.update((store) => {
@@ -79,7 +79,7 @@
 				type: data.channel.userId ? 'user' : 'public',
 				isPlaylist: true
 			},
-			size: 'xs'
+			size: 'sm'
 		});
 	};
 </script>

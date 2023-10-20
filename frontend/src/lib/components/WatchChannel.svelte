@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import Icon from './Icon.svelte';
-	import { sleepingStore, sleepingTimerStore } from '$lib/stores/sleeping.store';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.store';
 	import SleepingModal from '$lib/modals/Sleeping.modal.svelte';
@@ -102,34 +101,13 @@
 
 	$: {
 		if (browser) {
-			if ($sleepingStore) {
-				frame?.contentWindow?.postMessage('{"event":"command","func":"mute","args":""}', '*');
-				frame?.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-				console.log('sleep', interval);
-				if (interval) {
-					clear();
-					console.log('cleared');
-					console.log(interval);
-				}
-			} else {
-				frame?.contentWindow?.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-				frame?.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-				console.log('start', interval);
-				if (!interval) {
-					startInterval();
-				}
+			frame?.contentWindow?.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+			frame?.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+			if (!interval) {
+				startInterval();
 			}
 		}
 	}
-
-	const sleep = () => {
-		modalStore.set({
-			title: 'Sleep',
-			component: SleepingModal,
-			props: {},
-			size: 'sm'
-		});
-	};
 </script>
 
 <svelte:head>
@@ -151,13 +129,7 @@
 			class="w-full h-full"
 			bind:this={frame}
 		/>
-		<button class="absolute top-12 right-0 py-4 px-6" on:click={sleep}>
-			{#if $sleepingTimerStore}
-				<Icon icon="sleep_score" className="text-white animate-pulse" />
-			{:else}
-				<Icon icon="bedtime" className="text-white" />
-			{/if}
-		</button>
+
 		{#if upcomingVideo}
 			<div transition:fade class="absolute top-0 right-0 w-128 h-32 m-12">
 				<div class="bg-gray-950 bg-opacity-80 rounded-md p-4 flex gap-4">

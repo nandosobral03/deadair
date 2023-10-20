@@ -34,17 +34,17 @@
 	};
 </script>
 
-<div class="flex flex-col gap-8 w-full h-full">
+<div class="flex flex-col gap-8 w-full h-full justify-between">
 	<input
-		class="w-full flex-grow border-2 border-gray-100 border-opacity-5
+		class="w-full border-2 border-gray-100 border-opacity-5
 		 rounded-md focus:outline-none focus:ring-2
 		 focus:ring-primary focus:border-transparent bg-transparent p-2
-		  text-gray-300 resize-none"
+		  text-gray-300 resize-none text-start items-start"
 		placeholder="Enter playlist URL here (Max 50 videos)"
 		bind:value={playlist}
 	/>
 	<button
-		class="w-48 h-12 px-4 bg-primary text-black flex items-center justify-center straight-shadow ml-auto"
+		class="w-48 h-12 px-4 bg-primary text-gray-100 flex items-center justify-center straight-shadow ml-auto"
 		on:click={() => massAdd()}
 	>
 		Add videos

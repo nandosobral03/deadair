@@ -78,7 +78,6 @@
 <div class="flex flex-col gap-8 w-full h-full">
 	<textarea
 		class="w-full flex-grow border-2 border-gray-100 border-opacity-5
-		w-full
 		 rounded-md focus:outline-none focus:ring-2
 		 focus:ring-primary focus:border-transparent bg-transparent p-2
 		  text-gray-300
@@ -87,7 +86,7 @@
 		bind:value={videos}
 	/>
 	<button
-		class="w-48 h-12 px-4 bg-primary text-black flex items-center justify-center straight-shadow ml-auto"
+		class="w-48 h-12 px-4 bg-primary text-gray-100 flex items-center justify-center straight-shadow ml-auto"
 		on:click={() => massAdd()}
 	>
 		Add videos

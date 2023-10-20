@@ -5,7 +5,17 @@
 	import type { LayoutServerData } from '../../$types';
 	import Icon from '$lib/components/Icon.svelte';
 	export let data: PageData & LayoutServerData;
-
+	import { sleepingStore, sleepingTimerStore } from '$lib/stores/sleeping.store';
+	import { modalStore } from '$lib/stores/modal.store';
+	import SleepingModal from '$lib/modals/Sleeping.modal.svelte';
+	const sleep = () => {
+		modalStore.set({
+			title: 'Sleep',
+			component: SleepingModal,
+			props: {},
+			size: 'sm'
+		});
+	};
 	let showChat = false;
 </script>
 
@@ -16,7 +26,19 @@
 	>
 		<Icon icon={showChat ? 'comments_disabled' : 'chat'} />
 	</button>
-	<WatchChannel originalSchedule={data.schedule} channelName={data.channel.name} />
+	<button
+		class="absolute top-16 right-2 text-gray-200 hoverable z-20 bg-primary p-2 rounded-md flex items-center justify-center"
+		on:click={sleep}
+	>
+		{#if $sleepingTimerStore}
+			<Icon icon="sleep_score" className="text-white animate-pulse" />
+		{:else}
+			<Icon icon="bedtime" className="text-white" />
+		{/if}
+	</button>
+	{#if !$sleepingStore}
+		<WatchChannel originalSchedule={data.schedule} channelName={data.channel.name} />
+	{/if}
 	{#if showChat}
 		<Chat channel={data.channel.id} token={data.token} />
 	{/if}
